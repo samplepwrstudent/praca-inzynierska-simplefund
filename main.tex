@@ -10,10 +10,9 @@
 %and generate pdfs, and save in title_page folder.
 \begin{document}
 
-\includepdf[pages={1}]{title_page/pd_mgr_pl.pdf}
+\includepdf[pages={1}]{title_page/strona_tytulowa.pdf}
 \doublepage
-\includepdf[pages={1}]{title_page/pd_mgr_en.pdf}	
-\doublepage
+
 % Add table of contents
 \pagestyle{tableOfContentStyle}
 % Add abstract
@@ -28,7 +27,7 @@
  
 % Create chapters:
 \input{chapters/introduction.tex}
-\input{chapters/related-work.tex}
+\input{chapters/rozdzial1/rozdzial1_main.tex}
 \input{chapters/chapter1/chapter1_main.tex}
 \input{chapters/conclusions.tex}
 % Redefine plain for 1st bibliography page style

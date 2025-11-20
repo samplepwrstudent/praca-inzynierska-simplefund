@@ -1,13 +1,86 @@
-\Chapter{Introduction}\label{chapter:introduction}
-W pracy formułuje się cele o charakterze badawczym wymagające doboru i zastosowania metod badawczych, wykorzystując wiedzę teoretyczną oraz naukową. Wskazane jest przedstawienie, co nowego jest zaproponowane w pracy oraz podanie ograniczeń i słabych/mocnych stron opracowanego rozwiązania (jeżeli dotyczy). Rozdział wprowadzający powinien służyć czytelnikowi do zrozumienia celu pracy.
+\Chapter{Wprowadzenie}\label{chapter:introduction}
+Celem niniejszej pracy inżynierskiej jest zaprojektowanie i implementacja aplikacji wspomagającej indywidualnych inwestorów w monitorowaniu ich portfela inwestycyjnego w sposób przejrzysty, prosty oraz dostosowany do realnych potrzeb użytkownika. Współczesne rynki finansowe charakteryzują się coraz większą dostępnością instrumentów inwestycyjnych, takich jak akcje, fundusze ETF, obligacje, lokaty bankowe czy produkty oszczędnościowe oferowane przez instytucje finansowe. Dynamiczny rozwój platform brokerskich oraz niskie bariery wejścia sprawiają, że nawet początkujący inwestorzy dysponują zróżnicowanymi portfelami, rozproszonymi często pomiędzy kilkoma podmiotami (np. różne biura maklerskie, banki, obligacje). 
 
-\section{Problem Statement}
-W tej sekcji student powinien przedstawić bliżej problem, którym chce się zmierzyć. Jasno zdefiniuj problem badawczy. Podaj swoje cele, zadania i pytania badawcze. Wyjaśnij znaczenie badania. Określ ograniczenia badań.
+\section{Sformułowanie problemu}
+W takich warunkach prowadzenie systematycznej, spójnej i czytelnej ewidencji staje się zadaniem czasochłonnym oraz podatnym na błędy. Tradycyjne metody, oparte na arkuszach kalkulacyjnych lub ręcznym zapisywaniu danych, okazują się niewystarczające, gdy liczba operacji rośnie, a inwestor oczekuje bieżącej informacji o strukturze portfela, wyniku historycznym, poziomie zysku lub straty oraz ekspozycji na poszczególne klasy aktywów.
+
+Problem ten jest szczególnie widoczny w przypadku osób łączących inwestycje giełdowe, oszczędnościowe i gotówkowe, które są raportowane w odmienny sposób, w różnych systemach i formatach danych. Brak zintegrowanego, intuicyjnego narzędzia powoduje, że inwestor ma utrudnioną ocenę swojej sytuacji finansowej, co może prowadzić do podejmowania decyzji na podstawie niepełnych lub nieaktualnych informacji.
+
+\section{Cele pracy}
+W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwiązania, które zminimalizuje konieczność ręcznego przetwarzania danych i umożliwi użytkownikowi szybkie uzyskanie syntetycznego obrazu własnych inwestycji. Opracowywana aplikacja ma za zadanie integrować informacje o różnych typach aktywów, prezentować je w jednolitym, zrozumiałym interfejsie oraz zapewniać możliwość śledzenia kluczowych parametrów, takich jak wartość portfela, stopa zwrotu czy udział poszczególnych instrumentów w całości inwestycji. Istotnym aspektem celu pracy jest także poprawa czytelności i ergonomii monitorowania portfela poprzez zastosowanie odpowiednich wizualizacji danych (wykresy, zestawienia, wskaźniki), które ułatwiają porównywanie wyników oraz identyfikację trendów.
+
+\subsection{Wymagania funkcjonalne}
+
+\subsubsection{Rejestracja i logowanie użytkownika}
+\begin{itemize}
+    \item Użytkownik może założyć konto.
+    \item Użytkownik może zalogować się do aplikacji.
+    \item Użytkownik może zalogować się za pomocą Google.
+\end{itemize}
+
+\subsubsection{Zarządzanie portfelem inwestycyjnym}
+\begin{itemize}
+    \item Użytkownik może dodawać operacje: zakup/sprzedaż akcji, lokaty, depozytu.
+    \item Użytkownik może usuwać istniejące operacje.
+    \item Użytkownik może filtrować i sortować historię operacji.
+    \item Użytkownik może importować historię operacji z brokera XTB.
+\end{itemize}
+
+\subsubsection{Prezentacja stanu portfela}
+\begin{itemize}
+    \item Aplikacja wyświetla aktualną wartość portfela użytkownika.
+    \item Aplikacja wyświetla strukturę portfela według klas aktywów w formie wykresu.
+    \item Aplikacja prezentuje podstawowe wskaźniki (zysk/strata, stopa zwrotu).
+\end{itemize}
+
+\subsubsection{Kursy walut i wycena aktywów}
+\begin{itemize}
+    \item Aplikacja pobiera aktualne kursy walut.
+    \item Aplikacja pobiera notowania instrumentów finansowych.
+    \item Aplikacja przelicza wartości instrumentów i portfela na polski złoty.
+\end{itemize}
+
+\subsubsection{Interfejs użytkownika}
+\begin{itemize}
+    \item Aplikacja działa jako aplikacja jednostronicowa.
+    \item Użytkownik może przełączać motyw jasny/ciemny.
+\end{itemize}
 
 
-\section{Thesis Objectives}
-W tej sekcji powinny zostać przedstawione konkretne działania, które określają pracę studenta w celu rozwiązania problemu.
+
+\subsection{Wymagania niefunkcjonalne}
+
+\subsubsection{Wydajność}
+\begin{itemize}
+    \item Aplikacja powinna ładować się średnio poniżej minuty.
+    \item Operacje takie jak dodanie transakcji lub zmiana widoku powinny być wykonywane bez przeładowania strony.
+    \item Dane często używane powinny być buforowane po stronie klienta.
+\end{itemize}
+
+\subsubsection{Niezawodność i dostępność}
+\begin{itemize}
+    \item Aplikacja powinna obsługiwać błędy zewnętrznych serwisów.
+\end{itemize}
+
+\subsubsection{Bezpieczeństwo}
+\begin{itemize}
+    \item Dane użytkownika są chronione mechanizmem uwierzytelniania.
+    \item Każdy użytkownik ma dostęp tylko do swoich danych.
+\end{itemize}
+
+\subsubsection{Interfejs użytkownika}
+\begin{itemize}
+    \item Aplikacja powinna korzystać ze spójnego systemu projektowania.
+    \item Formularze powinny posiadać walidację i czytelne komunikaty błędów.
+\end{itemize}
+
+\subsubsection{Utrzymywalność i jakość oprogramowania}
+\begin{itemize}
+    \item Wybrany język programowania powinien pozwalać na statyczne typowanie.
+    \item Aplikacja powinna być podzielona na moduły.
+    \item Projekt powinien korzystać z systemu kontroli wersji.
+\end{itemize}
 
 
-\section{Thesis Outline}
+\section{Zarys pracy}
 Zarysuj strukturę swojej pracy dyplomowej. Ogólnie przedstawienie pracy. Przykładowo: ,,Praca dzieli się na $7$ rozdziałów (\dots)''. Rozdział \ref{chapter:politechnika} dotyczy (\dots). Temat został rozwinięty~w~\ref{chapter:podrozdzial}.
