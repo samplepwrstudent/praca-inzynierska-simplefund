@@ -2,7 +2,7 @@
 
 % moje
 \usepackage{subcaption}
-
+\usepackage{tocloft}
 
 % Podstawowe ustawienia języka, według którego formatowany będzie dokument
 \usepackage[english,polish]{babel}
@@ -90,8 +90,41 @@
 
 % Listowanie kodów źródłowych
 \usepackage{listings} 
-\renewcommand{\lstlistingname}{Source code} % Polska nazwa listingu
+\renewcommand{\lstlistingname}{Kod źródłowy} % Polska nazwa listingu
+\usepackage{xcolor}
 
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    frame=single
+    showspaces=false,
+    showstringspaces=false
+}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, 
+  finally, for, function, if, in, instanceof, new, return, switch, this, throw, 
+  try, typeof, var, void, while, with, let, const},
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  sensitive=true,
+  comment=[l]//,
+  commentstyle=\color{gray}\ttfamily,
+  morecomment=[s]{/*}{*/},
+  stringstyle=\color{orange}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinelanguage{TypeScript}{
+  language=JavaScript,
+  keywords={const, class, export, boolean, throw, implements, import, this, interface, 
+  extends, public, private, protected, readonly, enum, type, namespace},
+}
 % ***************************************************************************************************
 % Marginesy 
 % ***************************************************************************************************
@@ -112,7 +145,6 @@
 \usepackage{titling}
 
 % Umożliwia modyfikowanie stylu spisu treści
-\usepackage[subfigure]{tocloft}	
 
 \tocloftpagestyle{tableOfContentStyle}
 
@@ -452,7 +484,6 @@
 \usepackage{colortbl}
 \usepackage{adjustbox}
 \usepackage{color,soul}
-\usepackage{subfigure}
 \usepackage{pdfpages}
 
 \let\origdoublepage\cleardoublepage

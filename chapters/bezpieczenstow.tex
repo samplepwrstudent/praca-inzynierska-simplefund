@@ -1,0 +1,95 @@
+\chapter{Bezpieczeństwo i jakość danych}
+
+System zarządzania portfelem inwestycyjnym musi zapewnić ochronę przed nieautoryzowanym dostępem oraz zagwarantować integralność przechowywanych danych. Implementacja mechanizmów bezpieczeństwa w aplikacji obejmuje ochronę realizowaną zarówno po stronie klienta, jak i po stronie serwera bazy danych. Dodatkowo system walidacji danych oraz odpowiednia obsługa stanów ładowania i błędów przyczyniają się do zapewnienia wysokiej jakości i niezawodności funkcjonowania aplikacji.
+
+\section{Ograniczenie dostępu do zasobów}
+
+Podstawową zasadą bezpieczeństwa w aplikacji jest wymóg autoryzacji użytkownika przed uzyskaniem dostępu do jakichkolwiek danych portfela. Mechanizm ten realizowany jest za pomocą reguł bezpieczeństwa Firebase Firestore po stronie serwera oraz chronionych tras (protected routes) w aplikacji klienckiej.
+
+\subsection{Reguły bezpieczeństwa Firebase Firestore}
+
+Firestore Security Rules stanowią deklaratywny język definiowania warunków dostępu do dokumentów w bazie danych. Reguły te są wykonywane po stronie serwera, co uniemożliwia ich obejście przez modyfikację kodu aplikacji klienckiej.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{text}
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // users collection
+    match /users/{userId} {
+      allow read, write: if request.auth != null 
+                         && request.auth.uid == userId;
+    }
+  }
+}
+\end{minted}
+\caption{Fragment reguł bezpieczeństwa Firebase Firestore}
+\label{lst:firestore-rules}
+\end{listing}
+
+Każda reguła weryfikuje dwa podstawowe warunki: istnienie sesji autentykacyjnej użytkownika oraz zgodność identyfikatora użytkownika wykonującego operację z identyfikatorem właściciela danych.
+
+\subsection{Chronione trasy w aplikacji}
+
+Ochrona po stronie klienta realizowana jest poprzez system chronionych tras, który weryfikuje stan autoryzacji użytkownika przed renderowaniem komponentów wymagających uwierzytelnienia. Mechanizm ten zapobiega nie tylko nieautoryzowanemu dostępowi do interfejsu użytkownika, ale również automatycznie przekierowuje niezalogowanych użytkowników do strony logowania.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+function App() {
+  const { user, loading } = useAuthState();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            user ? <Navigate to="/" replace /> : <Login />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            user ? <Navigate to="/" replace /> : <Register />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            user ? <Dashboard /> : <Navigate to="/login" replace />
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+\end{minted}
+\caption{Implementacja chronionych tras w aplikacji}
+\label{lst:protected-routes}
+\end{listing}
+
+\section{Walidacja danych wejściowych}
+
+System walidacji danych oparty na bibliotece Zod stanowi pierwszą linię obrony przed wprowadzeniem nieprawidłowych lub potencjalnie niebezpiecznych danych do systemu. Walidacja wykonywana jest na wczesnym etapie przetwarzania danych, zanim zostaną one przesłane do bazy danych lub wykorzystane w obliczeniach.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+const stockOperationSchema = z.object({
+    type: z.enum(['buy', 'sell']),
+    symbol: z.string().min(1, 'Symbol jest wymagany'),
+    assetName: z.string().min(1, 'Nazwa jest wymagana'),
+    quantity: z.number().positive('Wolumen musi być większy od 0'),
+    pricePerUnit: z.number().positive('Cena musi być większa od 0'),
+    currency: z.string().min(1, 'Waluta jest wymagana'),
+});
+\end{minted}
+\caption{Schemat walidacji formularza operacji na akcjach}
+\label{lst:zod-validation}
+\end{listing}

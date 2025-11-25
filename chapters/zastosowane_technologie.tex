@@ -1,0 +1,113 @@
+\Chapter{Zastosowane technologie i narzędzia}
+
+Dobór technologii i narzędzi stanowi ważny element procesu projektowania systemu informatycznego. W przypadku tworzonej aplikacji \textit{SimpleFund} szczególny nacisk położono na łatwość utrzymania, szybkość iteracji, dostępność gotowych komponentów interfejsu użytkownika, a także integrację z usługami chmurowymi. W niniejszym rozdziale omówiono zastosowane rozwiązania, przedstawiając ich zalety, ograniczenia oraz uzasadnienie wyboru w kontekście alternatywnych technologii.
+
+\section{Warstwa frontendowa: React 18, TypeScript}
+
+Warstwa frontendowa aplikacji oparta jest na bibliotece React w wersji 18, języku TypeScript.
+
+React jest jedną z najpopularniejszych bibliotek do budowy interfejsów użytkownika w architekturze komponentowej. Umożliwia deklaratywne definiowanie widoków i sprzyja dzieleniu aplikacji na małe, wielokrotnie wykorzystywane komponenty. Wybór Reacta był podyktowany:
+\begin{itemize}
+    \item dojrzałością ekosystemu (bogata biblioteka komponentów, narzędzi oraz materiałów edukacyjnych),
+    \item łatwością integracji z innymi bibliotekami (np. React Hook Form, React Query),
+    \item szerokim wsparciem społeczności oraz stabilnym rozwojem projektu.
+\end{itemize}
+
+Alternatywami były m.in. Angular oraz Vue. Angular jako pełny framework oferuje rozbudowany zestaw funkcji (m.in. wbudowany system routingu czy rozbudowane mechanizmy DI), jednak wiąże się z większą złożonością oraz stromą krzywą uczenia. Vue z kolei jest lekką i przystępną biblioteką, jednak w kontekście omawianego projektu większe znaczenie miała dojrzałość ekosystemu React oraz dostępność specyficznych narzędzi i integracji.
+
+TypeScript wprowadza statyczne typowanie do środowiska JavaScript. Jego zastosowanie w aplikacji \textit{SimpleFund} ma na celu:
+\begin{itemize}
+    \item zwiększenie bezpieczeństwa typów i redukcję klasy błędów związanych z niejawnie typowanymi danymi.
+    \item ułatwienie refaktoryzacji kodu (inteligentne podpowiedzi, sprawdzanie typów podczas kompilacji).
+    \item lepszą dokumentację wewnętrzną kodu poprzez zdefiniowane interfejsy i typy.
+\end{itemize}
+W porównaniu z czystym JavaScriptem, TypeScript wymaga dodatkowej konfiguracji oraz kompilacji. Jednak koszty te są rekompensowane przez poprawę jakości i czytelności kodu.
+
+\section{Interfejs użytkownika: Material UI v7 (Material Design 3)}
+
+Do budowy warstwy prezentacji zastosowano bibliotekę Material UI w wersji 7, implementującą założenia Material Design 3. Decyzja ta była podyktowana potrzebą uzyskania spójnego, nowoczesnego interfejsu użytkownika bez konieczności projektowania wszystkich elementów od podstaw.
+
+Zalety Material UI v7 obejmują:
+\begin{itemize}
+    \item bogaty zestaw gotowych komponentów (przyciski, formularze, tabele, karty, wykresy).
+    \item spójny system typografii, odstępów oraz palety barw zgodny z wytycznymi Material Design.
+    \item rozbudowane możliwości personalizacji poprzez motywy (np. łatwe wsparcie dla trybu jasnego i ciemnego).
+    \item dobrą integrację z React i TypeScript.
+\end{itemize}
+
+Ograniczeniem tej biblioteki jest stosunkowo duży rozmiar w porównaniu z lżejszymi bibliotekami (np. Chakra UI), które oferują bardziej minimalistyczne podejście lub wyłącznie logikę komponentów bez zdefiniowanego stylu. W kontekście \textit{SimpleFund} priorytetem była jednak szybkość tworzenia spójnego i dostępnego interfejsu, dlatego zdecydowano się na kompleksowe rozwiązanie MUI.
+
+Alternatywą było wykorzystanie surowego HTML i CSS (np. z użyciem Tailwind CSS), co mogłoby dać większą kontrolę nad detalami wizualnymi, lecz kosztem znacznie większego nakładu pracy przy tworzeniu standardowych komponentów (formularze, dialogi, nawigacja).
+
+\section{Warstwa backendowa: Firebase (Auth, Firestore, Hosting) oraz Heroku + Flask}
+
+Zaplecze aplikacji oparte jest głównie na usługach Firebase: Firebase Authentication, Cloud Firestore oraz Hosting. Dodatkowo przewidziano integrację z prostym backendem typu \textit{backend-as-a-service} uruchomionym na platformie Heroku, zrealizowanym w technologii Flask (jezyk programowania Python).
+
+Firebase została wybrana z następujących powodów:
+\begin{itemize}
+    \item \textbf{Firebase Authentication} zapewnia gotowe mechanizmy logowania (np. za pomocą Google), obsługę sesji oraz bezpieczne przechowywanie danych użytkowników bez konieczności samodzielnej implementacji złożonych mechanizmów bezpieczeństwa.
+    \item \textbf{Cloud Firestore} dostarcza skalowalną bazę danych NoSQL z mechanizmem synchronizacji w czasie rzeczywistym, co upraszcza implementację funkcjonalności związanych z aktualizacją portfela inwestycyjnego i operacji finansowych.
+    \item \textbf{Firebase Hosting} umożliwia prosty, zautomatyzowany proces wdrażania frontendowej części aplikacji, oferując jednocześnie dobrą wydajność i integrację z pozostałymi usługami Firebase.
+\end{itemize}
+
+Z perspektywy alternatywnych rozwiązań rozważane mogły być klasyczne stosy backendowe, takie jak Node.js z Express oraz relacyjną bazą danych (np. PostgreSQL) uruchamianą na serwerze VPS. Takie podejście zapewnia większą kontrolę nad infrastrukturą i modelem danych, ale wymaga:
+\begin{itemize}
+    \item samodzielnego projektowania i utrzymania warstwy uwierzytelniania i autoryzacji,
+    \item konfiguracji, monitorowania i skalowania serwera aplikacyjnego oraz bazy danych,
+    \item większego nakładu pracy administracyjnej i DevOps.
+\end{itemize}
+W kontekście pracy inżynierskiej, gdzie istotne jest skupienie się na logice biznesowej i funkcjonalności produktu, wybrano rozwiązanie chmurowe, jakim jest Firebase.
+
+Minimalny backend na platformie Heroku nie był pierwotnie planowany. Jego stworzenie wymusiło brak darmowych serwisów dostarczających dane w czasie rzeczywistym o aktywach finansowych na rynkach innych niż amerykański. Z tego też powodu wybrano Flaska jako lekki framework webowy w języku Python, umożliwiający szybkie tworzenie prostych API do pobierania danych za pomocą biblioteki yahoo-finance wykorzystującej nieoficjalne REST API Yahoo Finance.
+Zaletą Heroku jest prosty model wdrażania oraz korzystny plan dla studentów, który wystarcza dla aplikacji o niewielkim ruchu. Ograniczeniem jest natomiast zależność od specyficznego modelu cenowego i zasobów platformy, a także mniejsza kontrola nad infrastrukturą w porównaniu z własnym serwerem VPS.
+
+\section{Domena i konfiguracja DNS: Namecheap}
+
+Domena aplikacji została wykupiona u dostawcy Namecheap. Wybór ten był motywowany przede wszystkim darmową roczną domeną dla studentów oferowaną przez Namecheap w ramach programu GitHub Student Developer Pack oraz prostym interfejsem zarządzania domenami.
+
+Alternatywą byłoby skorzystanie z darmowych subdomen dostarczanych przez sam Firebase. Takie rozwiązanie jest jednak mniej profesjonalne z perspektywy użytkownika końcowego i trudniej przenaszalne pomiędzy dostawcami usług hostingowych.
+
+\section{Zarządzanie stanem i danymi: React Query}
+
+Do zarządzania stanem danych pochodzących z Firestore oraz zewnętrznych API użyto biblioteki React Query. W odróżnieniu od bibliotek ogólnego przeznaczenia do zarządzania stanem, takich jak Redux, React Query skupia się na zarządzaniu danymi pochodzącymi z zapytań sieciowych.
+
+Kluczowe zalety React Query obejmują automatyczne buforowanie (cache) i ponowne wykorzystanie wyników zapytań, deklaratywną obsługę stanów ładowania, błędów oraz sukcesu, a także wbudowane mechanizmy odświeżania danych (np. refetch przy powrocie okna na pierwszy plan oraz kontrolę świeżości poprzez parametr stale time).
+
+\section{Formularze i walidacja: React Hook Form oraz Zod}
+
+Obsługa formularzy i ich walidacja została zrealizowana z wykorzystaniem biblioteki React Hook Form oraz Zod do definiowania schematów walidacyjnych. Zestaw ten wybrano ze względu na potrzebę efektywnego zarządzania stanem formularzy bez nadmiernych ponownych renderowań komponentów, ścisłego powiązania logiki walidacji z typami TypeScript oraz zapewnienia spójnego modelu walidacji po stronie klienta.
+
+React Hook Form opiera się na podejściu bazującym na refach i minimalnie inwazyjnej kontroli pól, co przekłada się na lepszą wydajność niż klasyczne podejście polegające na przechowywaniu każdego znaku w stanie komponentu. Z kolei Zod, jako biblioteka do walidacji schematów ściśle współpracująca z TypeScript, umożliwia definiowanie schematów danych w jednym miejscu i ich wielokrotne wykorzystanie, automatyczne wnioskowanie typów na podstawie tych schematów oraz łatwe mapowanie błędów walidacji na komunikaty prezentowane użytkownikowi.
+
+Alternatywą mogły być zestawy Formik (zarządzanie formularzami) oraz Yup (walidacja), jednak Formik w praktyce generuje większy narzut renderowania, a Zod zapewnia lepszą integrację z systemem typów TypeScript. W projekcie SimpleFund priorytetem była wydajność oraz ścisła zgodność z typowaniem, stąd decyzja o zastosowaniu tandemu React Hook Form + Zod. 
+
+\section{Zewnętrzne serwisy: Frankfurter / ExchangeRateAPI oraz Yahoo Finance}
+Aplikacja korzysta z zewnętrznych serwisów do pobierania danych o kursach walut oraz notowań aktywów finansowych. Serwis ExchangeRateAPI został wybrany ze względu na dużą liczbę zapytań w darmowym planie. Nieoficjalne API Yahoo Finance było jedyną dostępną darmową opcją do pobierania notowań aktywów finansowych.
+
+\section{Narzędzia deweloperskie i proces wdrażania: GitHub, automatyczny deploy do Firebase i Heroku}
+
+Kod źródłowy projektu przechowywany jest w repozytorium Git na platformie GitHub. Git umożliwia:
+\begin{itemize}
+    \item śledzenie historii zmian i łatwy powrót do wcześniejszych wersji,
+    \item pracę w gałęziach (ang. \textit{branches}) i integrację zmian poprzez mechanizm ich łączenia
+    \item integrację z narzędziami CI/CD.
+\end{itemize}
+
+GitHub pełni tu rolę centralnego repozytorium oraz platformy integracji z procesem automatycznego wdrożenia. Wdrożenie aplikacji frontendowej na Firebase Hosting oraz backendu we Flasku na Heroku zostało zautomatyzowane, co oznacza, że zmiany wprowadzone do głównej gałęzi repozytorium mogą uruchamiać procesy budowania i publikacji nowej wersji aplikacji.
+
+Zaletami tego podejścia są:
+\begin{itemize}
+    \item skrócenie czasu pomiędzy wprowadzeniem zmiany a jej udostępnieniem użytkownikom,
+    \item zmniejszenie ryzyka popełnienia błędu podczas ręcznego wdrażania,
+    \item lepsza powtarzalność procesu wdrożeniowego.
+\end{itemize}
+
+Alternatywnie możliwe byłoby ręczne kopiowanie plików na serwer lub korzystanie z prostych skryptów wdrożeniowych uruchamianych lokalnie. Tego typu podejścia są jednak mniej skalowalne i trudniejsze do utrzymania, szczególnie w perspektywie dalszego rozwoju aplikacji.
+
+\section{Podsumowanie wybranych technologii}
+
+Dobór technologii i narzędzi w projekcie \textit{SimpleFund} został podporządkowany celowi szybkiego i bezpiecznego wytwarzania aplikacji webowej o nowoczesnym interfejsie użytkownika i integracji z zewnętrznymi usługami. React 18, TypeScript oraz Vite zapewniają solidną podstawę frontendową, Material UI v7 przyspiesza budowę spójnego interfejsu, a Firebase oraz Heroku upraszczają zarządzanie backendem i infrastrukturą.
+
+React Query, React Hook Form oraz Zod usprawniają zarządzanie danymi i formularzami, minimalizując liczbę błędów i zwiększając czytelność kodu. Całość dopełniają GitHub i zautomatyzowany proces wdrożeniowy, zwiększające powtarzalność i niezawodność dostarczania nowych wersji systemu.
+
+Przedstawione technologie nie są pozbawione ograniczeń, jednak w kontekście skali, celu i charakteru pracy inżynierskiej stanowią racjonalny kompromis pomiędzy możliwościami, złożonością i kosztami utrzymania aplikacji. 

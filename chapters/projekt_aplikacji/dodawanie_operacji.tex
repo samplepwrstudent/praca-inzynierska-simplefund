@@ -1,0 +1,183 @@
+\section{Dodawanie operacji}
+
+W aplikacji operacja stanowi pojedynczy zapis dotyczący ruchu finansowego użytkownika, takiego jak wpłata środków na rachunek, założenie lokaty bankowej czy zawarcie transakcji giełdowej. Każda operacja zawiera informacje niezbędne do późniejszego obliczania bieżącej wartości portfela, łącznych wpłat i wypłat, a także zysków i strat związanych z inwestycjami. Z tego względu moduł dodawania operacji pełni centralną rolę w systemie: to właśnie na podstawie zarejestrowanych operacji wyliczane są statystyki prezentowane na pulpicie użytkownika, wykresy oraz szczegółowe zestawienia.
+
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/przycisk_nowa_operacja.png}
+        \caption{Przycisk dodawania nowej operacji}
+        \label{fig:nowa-operacja}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[height=5cm, keepaspectratio]
+        {images/wybor_rodzaju_aktywa.png}
+        \caption{Wybór rodzaju aktywa}
+        \label{fig:wybor-aktywa}
+    \end{subfigure}
+
+    \caption{Przycisk dodawania nowej operacji wraz z wyborem aktywa}
+    \label{fig:dwa-obrazki}
+\end{figure}
+
+Interakcja użytkownika z funkcją dodawania operacji rozpoczyna się od przycisku akcji umieszczonego w obrębie widoku portfela. Przycisk ten, zaimplementowany jako komponent \texttt{AddOperationButton}, jest stale dostępny w kontekście pulpitu. Umieszczenie go w tym obszarze pozwala na szybkie przejście od obserwacji do działania, bez konieczności zmiany podstrony lub kontekstu. Po rozwinięciu przycisku użytkownik otrzymuje dostęp do wyboru rodzaju operacji, co umożliwia uruchomienie odpowiedniego okna modalnego odpowiadającego konkretnemu typowi zdarzenia finansowego.
+
+\begin{lstlisting}[language=typescript,caption={Szkic komponentu przycisku dodawania operacji},label={lst:add-operation-button}]
+<Box>
+    // Rozwijane menu do wyboru rodzaju aktywa
+    <AssetTypeSelector open={showSelector} onSelectType={handleSelectType} />
+    // Przycisk dodawania operacji
+    <Fab>
+        <AddIcon/>
+        nowa operacja
+        </>
+    </Fab>
+</Box>
+\end{lstlisting}
+
+Po wybraniu opcji dodania depozytu otwierany jest formularz w oknie modalnym. Składa się on z pól (kontrolerów \ref{lst:number-controller}), w których użytkownik wypełnia powiązane z aktywem dane. Formularz korzysta z komponentów React Hook Form oraz schematów walidacji Zod, co zapewnia kontrolę nad poprawnością danych wejściowych. W momencie zatwierdzenia formularza dane są przekazywane do logiki odpowiedzialnej za zapis w bazie danych Firestore, a następnie wykorzystywane do aktualizacji łącznej wartości środków wpłaconych przez użytkownika.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/modal_depozyt.png}
+    \caption{Modal dodawania depozytu}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{lstlisting}[language=typescript,caption={Formularz dodawnia operacji depozytu},label={lst:deposit-form}]
+<Box sx={{ p: spacing.m }} component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: spacing.m }}>
+        <OperationTypeController control={control} errors={errors} name="type" />
+
+        <NumberController
+            control={control}
+            errors={errors}
+            name="pricePerUnit"
+            label="Wartosc"
+        />
+
+        <OperationFormActions onCancel={onCancel} isSubmitting={isSubmitting} />
+    </Box>
+</Box>
+\end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/modal_lokata.png}
+    \caption{Modal dodawania lokaty}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{lstlisting}[language=typescript,caption={Kontroler dodawania liczby },label={lst:number-controller}]
+        <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+                <TextField
+                    {...field}
+                    label={label}
+                    type="number"
+                    fullWidth
+                    error={!!errors[name]}
+                    helperText={errors[name]?.message}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    sx={numberInputNoSpinner}
+                />
+            )}
+        />
+\end{lstlisting}
+
+Najbardziej rozbudowaną funkcjonalność stanowi modal służący do dodawania operacji na akcjach. Formularz umożliwia użytkownikowi określenie symbolu instrumentu giełdowego, liczby nabywanych lub zbywanych jednostek, ceny jednostkowej, waluty oraz daty transakcji. Podczas wprowadzania symbolu aplikacja wyświetla sugestie na podstawie listy wcześniej zdefiniowanych instrumentów przechowywanych w kolekcji Firestore, co umożliwia szybkie i precyzyjne odnalezienie właściwego aktywa.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{images/list_symboli.png}
+    \caption{Aplikacja wyświetla sugestie symboli}
+    \label{fig:placeholder}
+\end{figure}
+
+Po wybraniu symbolu aplikacja podejmuje próbę pobrania aktualnych lub historycznych danych rynkowych. W tym celu wykorzystywana jest usługa integrująca aplikację z zewnętrznym dostawcą danych, taką jak Yahoo Finance, zdefiniowana w warstwie serwisów. Jeżeli dane dla danego symbolu są już dostępne w lokalnej bazie Firestore, mogą zostać odczytane bezpośrednio z bazy, co skraca czas oczekiwania i redukuje liczbę połączeń z zewnętrznym API.
+
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/wyszukiwanie_symbolu.png}
+    \caption{Wyszukiwanie symbolu}
+    \label{fig:placeholder}
+\end{figure}
+
+W przeciwnym wypadku aplikacja wywołuje funkcję pobierającą dane z serwisu Yahoo (Listing: \ref{lst:stock-info}), a następnie zapisuje je w Firestore, aby mogły być ponownie wykorzystane przy kolejnych operacjach. Wpływa to zarówno na szybkość działania, jak i na spójność prezentowanych użytkownikowi informacji o wycenie instrumentów.
+
+Jeśli symbol zostanie poprawnie zidentyfikowany, aplikacja uzupełni informacje o jego walucie oraz aktualnej wartości, a sam symbol zostanie dodany do listy dostępnych instrumentów. W przypadku braku danych użytkownik otrzyma ostrzeżenie o niemożności weryfikacji symbolu, jednak nadal będzie miał możliwość dodania symbolu do portfela. W takim przypadku dane o aktualnej cenie będzie musiał uzupełniać samodzielnie. 
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{images/ostrzezenie_customowy_symbol.png}
+    \caption{Komunikat o braku odnalezienia symbolu}
+    \label{fig:placeholder}
+\end{figure}
+
+
+
+\begin{listing}
+\begin{minted}[fontsize=\small, linenos]{python}
+@app.route('/stock', methods=['GET'])
+def get_stock_info():
+    ticker = request.args.get('ticker')
+    
+    if not ticker:
+        return jsonify({'error': 'Ticker parameter is required'}), 400
+    
+    try:
+        stock = yf.Ticker(ticker)
+        
+        # try different periods - yahoo sometimes has issues with certain periods
+        hist = None
+        for period in ['1d', '5d', '1mo']:
+            try:
+                hist = stock.history(period=period)
+                if not hist.empty:
+                    break
+            except:
+                continue
+                
+        # ...
+        
+        # Get the last row with data (most recent data)
+        last = hist.iloc[-1]
+        previous = hist.iloc[-2] if len(hist) > 1 else last
+        
+        # Get currency information
+        try:
+            info = stock.info
+            currency = info.get('currency', None)
+        except:
+            currency = None
+        
+        stock_data = {
+            'ticker': ticker.upper(),
+            'currentPrice': round(float(last['Close']), 2),
+            'previousClose': round(float(previous['Close']), 2),
+            'open': round(float(last['Open']), 2),
+            'dayHigh': round(float(last['High']), 2),
+            'dayLow': round(float(last['Low']), 2),
+            'volume': int(last['Volume']),
+            'currency': currency,
+        }
+        
+        return jsonify(stock_data)
+\end{minted}
+\caption{Fragment kodu serwera Flask pobierający dane giełdowe}
+\label{lst:stock-info}
+\end{listing}
+
+
+Dzięki opisanej logice dodanie operacji na akcjach skutkuje nie tylko zarejestrowaniem transakcji w kolekcji operacji, lecz także aktualizacją powiązanych danych o wycenach instrumentów, co wprost przekłada się na możliwość późniejszego obliczania bieżącej wartości portfela oraz wyników inwestycyjnych.
+
+\newpage

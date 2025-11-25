@@ -1,0 +1,65 @@
+\section{Mechanizmy logowania, rejestracji i autoryzacji użytkowników}
+
+Zapewnienie bezpiecznego i ergonomicznego mechanizmu logowania oraz rejestracji użytkowników stanowi podstawowy element każdej współczesnej aplikacji internetowej. W tym przypadku mechanizm autoryzacji warunkuje dostęp do zasobów i funkcji aplikacji (historia wykonanych operacji), chroniąc dane użytkowników przed nieautoryzowanym dostępem.
+
+Aplikacja wykorzystuje usługę Firebase Authentication jako zewnętrzny mechanizm autoryzacji użytkowników. W warstwie konfiguracji inicjalizowana jest aplikacja Firebase, a następnie tworzony jest klient modułu uwierzytelniania, co schematycznie przedstawiono na listingu~\ref{lst:firebase-init}.
+
+\begin{lstlisting}[language=TypeScript, caption={Schemat konfiguracji usługi Firebase Authentication}, label={lst:firebase-init}]
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+\end{lstlisting}
+
+Mechanizm autoryzacji w Firebase opiera się na zarządzaniu tożsamością użytkownika po stronie usługi chmurowej. Aplikacja kliencka przekazuje dane logowania (np. adres e-mail i hasło lub token z zewnętrznego dostawcy, takiego jak Google), a następnie otrzymuje zaszyfrowane tokeny sesyjne, które pozwalają w sposób bezpieczny identyfikować użytkownika przy każdym kolejnym żądaniu. Dzięki temu logika weryfikacji poświadczeń oraz przechowywania haseł jest przeniesiona do zaufanego dostawcy, co ogranicza ryzyko błędów implementacyjnych po stronie aplikacji.Aplikacja SimpleFund wykorzystuje usługę Firebase Authentication jako zewnętrzny mechanizm autoryzacji użytkowników. W warstwie konfiguracji inicjalizowana jest aplikacja Firebase, a następnie tworzony jest klient modułu uwierzytelniania.
+
+Interfejs logowania oraz rejestracji został zaimplementowany jako zbiór komponentów stron \texttt{Login.tsx} oraz \texttt{Register.tsx}, które współdzielą podejście oparte na deklaratywnej walidacji danych wejściowych. W obu przypadkach zastosowano bibliotekę React Hook Form w połączeniu z biblioteką Zod, dzięki czemu reguły poprawności danych opisane są w postaci schematów typów, a ich weryfikacja odbywa się po stronie klienta jeszcze przed wywołaniem metod uwierzytelniania Firebase.
+
+\begin{figure}[h]
+    \centering
+
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[height=7cm]{jasny_ekran_logowania.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[height=7cm]{images/rejestracja.png}
+    \end{subfigure}
+
+    \caption{Widoki logowania i rejestracji}
+    \label{fig:dwa_obrazki}
+\end{figure}
+
+Schemat walidacji danych logowania wymaga poprawnego adresu poczty elektronicznej oraz hasła o minimalnej długości sześciu znaków, co przedstawiono na listingu~\ref{lst:login-schema}.
+
+\begin{lstlisting}[language=TypeScript, caption={Schemat walidacji danych logowania}, label={lst:login-schema}]
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+\end{lstlisting}
+
+Analogicznie, w przypadku rejestracji zdefiniowano rozszerzony schemat, który, poza adresem e-mail i hasłem, obejmuje również pole służące do potwierdzenia hasła. Schemat wymusza zgodność obu wartości, co umożliwia wczesne wychwycenie potencjalnych błędów po stronie użytkownika (listing~\ref{lst:register-schema}).
+
+\begin{lstlisting}[language=TypeScript, caption={Schemat walidacji danych rejestracji}, label={lst:register-schema}]
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  path: ['confirmPassword'],
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+\end{lstlisting}
+
+Dodatkowo aplikacja umożliwia logowanie za pośrednictwem konta Google, wykorzystując mechanizm uwierzytelniania federacyjnego.Jest to metoda, w której proces identyfikacji użytkownika powierzany jest zewnętrznemu, zaufanemu dostawcy tożsamości (Google), dzięki czemu aplikacja nie musi samodzielnie przechowywać ani weryfikować danych logowania\cite{wolniewicz2012federacyjne}. Rozwiązanie to zwiększa bezpieczeństwo oraz ułatwia użytkownikom dostęp do systemu poprzez wykorzystanie istniejących kont. Wybrany fragment kodu odpowiedzialny za obsługę tego scenariusza przedstawiono na listingu~\ref{lst:google-login}.
+
+\begin{lstlisting}[language=TypeScript, caption={Logowanie użytkownika przy użyciu konta Google}, label={lst:google-login}]
+const handleGoogleSignIn = async () => {
+  const result = await signInWithPopup(auth, googleProvider);
+  await createUserDocument(result.user);
+};
+\end{lstlisting}

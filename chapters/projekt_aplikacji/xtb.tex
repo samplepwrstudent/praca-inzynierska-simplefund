@@ -1,0 +1,78 @@
+\section{Import operacji od brokera inwestycyjnego XTB}
+
+W ramach aplikacji zaimplementowano funkcję importu historii transakcji z domu maklerskiego XTB. XTB (X-Trade Brokers) jest jednym z najpopularniejszych brokerów w Polsce, szeroko wykorzystywanym przez inwestorów detalicznych, co czyni go naturalnym wyborem jako pierwsze źródło danych transakcyjnych integrowanych z aplikacją. Integracja z XTB pozwala użytkownikowi w prosty sposób załadować istniejącą historię operacji bez konieczności ręcznego wprowadzania pojedynczych transakcji.
+
+Interfejs użytkownika udostępnia dedykowany przycisk otwierający modal odpowiedzialny za import pliku z raportem XTB. Po jego aktywacji wyświetlane jest okno dialogowe, w którym użytkownik wskazuje plik w formacie \texttt{.xlsx} wyeksportowany z panelu klienta XTB. Modal prezentuje podstawowe informacje o formacie wymaganego pliku oraz przebiegu procesu przetwarzania, instrukcje pobrania historii transakcji z XTB, a także komunikaty o ewentualnych błędach walidacji. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{images/xtb_modal.png}
+    \caption{Modal importu operacji z XTB}
+    \label{fig:placeholder}
+\end{figure}
+Po wskazaniu pliku aplikacja rozpoczyna proces jego przetwarzania. Pierwszym etapem jest odczyt zawartości pliku \texttt{.xlsx} w przeglądarce z wykorzystaniem biblioteki \texttt{FileReader}. Plik jest wczytywany jako ciąg binarny, co następnie pozwala bibliotece \texttt{XLSX} na jego interpretację jako skoroszytu Excela. Na potrzeby niniejszej aplikacji zdefiniowano funkcję \texttt{parseXTBFile}, której zadaniem jest wyodrębnienie odpowiedniego arkusza z raportu XTB  oraz konwersja jego struktury tabelarycznej do formatu JSON, dogodnego do dalszego, krokowego przetwarzania.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            try {
+                const data = e.target?.result;
+                if (!data) {
+                    throw new Error('Brak danych w pliku');
+                }
+                const workbook = XLSX.read(data, { type: 'binary' });
+                // ...
+                // Convert sheet to JSON
+                const jsonData = XLSX.utils.sheet_to_json<XTBRawRow>(worksheet, {
+                    defval: undefined, // Default value for empty cells
+                    raw: false, // Return values as strings (easier date parsing)
+                });
+\end{minted}
+\caption{Konwersja pliku \texttt{.xlsx} z raportem XTB na strukturę JSON}
+\label{lst:parse-xtb-file}
+\end{listing}
+
+Kolejnym etapem jest przetwarzanie uzyskanej tablicy JSON wiersz po wierszu. Każdy wiersz jest interpretowany jako potencjalna operacja giełdowa, którą należy zweryfikować, oczyścić i przekształcić do wewnętrznego formatu aplikacji.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{images/przetwarzanie_xtb.png}
+    \caption{Wygląd modala w trakcie przetwarzania wierszy pliku}
+    \label{fig:placeholder}
+\end{figure}
+
+W procesie przekształcania każdy wiersz poddawany jest szeregowi filtrów i walidacji. W pierwszej kolejności eliminowane są wiersze nagłówkowe oraz metadane, które nie reprezentują rzeczywistych transakcji (np. wiersze zawierające nazwy sekcji raportu, dane klienta czy podsumowania salda). W kolejnym kroku wartości tekstowe są konwertowane na liczby, usuwane są symbole walut i inne znaki nienumeryczne, a daty są przekształcane do obiektów \texttt{Timestamp} zgodnych z używaną w projekcie bazą danych.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+// XTB exports use __EMPTY_X column names
+const xtbSymbol = String(
+    row['Symbol'] || row['symbol'] ||
+    row['__EMPTY_1'] || // Position 1 is typically Symbol
+    ''
+).trim();
+\end{minted}
+\caption{Przykład odczytu symbolu instrumentu z wiersza raportu XTB}
+\label{lst:xtb-symbol}
+\end{listing}
+
+Dodatkowo symbol instrumentu jest wyszukiwany w Serwisie Yahoo Finance co pozwala na dalszą integrację z modułem pobierania notowań giełdowych.
+
+\begin{figure}[h]
+\centering
+\texttt{Plik XLSX}
+$\longrightarrow$
+\texttt{Plik JSON}
+$\longrightarrow$
+\shortstack{\textit{walidacja}\\ \textit{filtrowanie}\\ \textit{wyłuskiwanie}}
+$\longrightarrow$
+\shortstack{\texttt{wewnętrzny}\\  \texttt{format}\\ \texttt{aplikacji}}
+
+\caption{Proces przekształcania danych wejściowych}
+\label{fig:proces-przeksztalcania}
+\end{figure}
+
+\newpage
+Tak zaprojektowany przepływ przetwarzania pliku XTB zapewnia użytkownikowi możliwość automatycznego zaimportowania pełnej historii transakcji przy zachowaniu spójności z wewnętrznym modelem danych aplikacji. Dzięki wykorzystaniu pośredniej warstwy w postaci JSON oraz iteracyjnemu przetwarzaniu wierszy możliwe jest łatwe rozszerzanie obsługi o kolejne typy raportów lub dodatkowe pola, bez konieczności ingerencji w podstawowy mechanizm importu.

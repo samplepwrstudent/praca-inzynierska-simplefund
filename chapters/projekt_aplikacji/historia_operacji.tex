@@ -1,0 +1,37 @@
+\section{Historia operacji}
+
+Wszystkie zarejestrowane operacje można przeglądać w uporządkowanej formie tabelarycznej. Widok ten został zrealizowany z wykorzystaniem biblioteki Material UI oraz wewnętrznego komponentu bazowego \textit{BaseTable}, który
+narzuca jednolitą stylistykę i zachowanie tabel w całej aplikacji. Widok umożliwia także usuwanie operacji dodanych przypadkowo lub błędnie oraz sortowanie tabeli względem wskazanej kolumny. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{images/historia_operacji.png}
+    \caption{Tabela historii operacji}
+    \label{fig:placeholder}
+\end{figure}
+
+Tabela historii operacji jest implementowana w komponencie \textit{OperationsTable} i opiera się na mechanizmie kolumn typu \textit{GridColDef}, pochodzącym z komponentu tabeli danych MUI. Każda kolumna opisuje sposób prezentacji wybranego atrybutu operacji (np. daty, typu, kwoty, instrumentu finansowego), a definicje kolumn przekazywane są następnie do komponentu BaseTable. Dzięki temu logika konfigurowania kolumn pozostaje lokalna dla danego widoku, natomiast powtarzalne elementy wyglądu oraz obsługi interakcji są współdzielone.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+const columns: GridColDef[] = [
+    {
+        field: 'quantity',
+        headerName: 'Wolumen',
+        align: 'left',
+        headerAlign: 'left',
+        type: 'number',
+        flex: 0.8,
+        minWidth: 100,
+        valueGetter: (value, row: Operation) => 
+            getStockOnlyValue(value, row.assetType),
+        valueFormatter: formatNumberOrDash,
+    },
+];
+\end{minted}
+\caption{Konfiguracja kolumny \texttt{Wolumen} w tabeli danych}
+\label{lst:columns-quantity}
+\end{listing}
+
+Na listingu \ref{lst:columns-quantity} przedstawiono fragment kodu, który definiuje kolumny tabeli historii operacji. Zastosowana w nim logika warunkowa decyduje, czy dana kolumna powinna prezentować wartość w zależności od typu operacji. W przypadku depozytów oraz lokat pola związane z instrumentami giełdowymi, takie jak \texttt{symbol} czy \texttt{wolumen}, zwracają wartość \textit{-}, co pozytywnie wpływa na czytelność i przejrzystość tabeli.
+
