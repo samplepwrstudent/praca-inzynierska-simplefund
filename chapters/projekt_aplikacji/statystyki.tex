@@ -1,8 +1,6 @@
 \section{Statystyki portfela i wizualizacja danych}
 
- Implementacja sekcji statystyk oraz wizualizacji danych ma na celu dostarczenie inwestorowi kompleksowych informacji o kondycji jego portfela, umożliwiając świadome podejmowanie decyzji inwestycyjnych. System statystyk został zaprojektowany w sposób pozwalający na szybką ocenę opłacalności inwestycji oraz określenie podatności portfela na spadki wartości.
-
-\subsection{Sekcja statystyk portfela}
+Sekcja statystyk oraz wizualizacji danych ma na celu dostarczenie inwestorowi kompleksowych informacji o kondycji jego portfela, umożliwiając świadome podejmowanie decyzji inwestycyjnych. System statystyk został zaprojektowany w sposób pozwalający na szybką ocenę opłacalności inwestycji oraz określenie podatności portfela na spadki wartości.
 
 \begin{figure}[h]
     \centering
@@ -11,7 +9,7 @@
     \label{fig:placeholder}
 \end{figure}
 
-Sekcja statystyk została zaimplementowana jako zestaw pięciu kart informacyjnych, prezentujących najważniejsze wskaźniki finansowe charakteryzujące portfel inwestycyjny. Każda karta wyświetla pojedynczy wskaźnik wraz z jego aktualną wartością, a wybrane wskaźniki są dodatkowo opatrzone ikonami informacyjnymi zawierającymi ich pełne nazwy i definicje.
+Sekcja statystyk została zaprojektowana jako zestaw pięciu kart informacyjnych, prezentujących najważniejsze wskaźniki finansowe charakteryzujące portfel inwestycyjny. Każda karta wyświetla pojedynczy wskaźnik wraz z jego aktualną wartością, a wybrane wskaźniki są dodatkowo opatrzone ikonami informacyjnymi zawierającymi ich pełne nazwy i definicje.
 
 \subsubsection{Wkład własny}
 
@@ -45,7 +43,7 @@ gdzie $B$ to bilans, $V$ to wartość inwestycji, a $W$ to wkład własny. Warto
 
 \subsubsection{Stopa zwrotu (ROI)}
 
-Wskaźnik ROI (ang. Return on Investment) określa procentową stopę zwrotu z inwestycji względem wkładu własnego:
+Wskaźnik ROI\cite{ks2024roi} (ang. Return on Investment) określa procentową stopę zwrotu z inwestycji względem wkładu własnego:
 
 \begin{equation}
 ROI = \frac{B}{W} \cdot 100\%
@@ -55,27 +53,18 @@ gdzie $ROI$ to stopa zwrotu, $B$ to bilans portfela, a $W$ to wkład własny. Ws
 
 \subsubsection{Średnioroczna stopa zwrotu (CAGR)}
 
-Wskaźnik CAGR (ang. Compound Annual Growth Rate) reprezentuje średnią roczną stopę zwrotu przy założeniu reinwestowania zysków. Jest to szczególnie istotny wskaźnik dla długoterminowych inwestycji, ponieważ uwzględnia efekt składania zysków w czasie:
+Wskaźnik CAGR\cite{mfiles2023cagr} (ang. Compound Annual Growth Rate)  reprezentuje średnią roczną stopę zwrotu przy założeniu reinwestowania zysków. Jest to szczególnie istotny wskaźnik dla długoterminowych inwestycji, ponieważ uwzględnia efekt składania zysków w czasie:
 
 \begin{equation}
 CAGR = \left(\left(\frac{V}{W}\right)^{\frac{1}{t}} - 1\right) \cdot 100\%
 \end{equation}
 
-gdzie $CAGR$ to średnioroczna stopa zwrotu, $V$ to wartość inwestycji, $W$ to wkład własny, a $t$ to czas trwania inwestycji wyrażony w latach.
+gdzie $CAGR$ to średnioroczna stopa zwrotu, $V$ to wartość inwestycji, $W$ to wkład własny, a $t$ to czas trwania inwestycji, wyrażony w latach.
 
-Implementacja obliczania wskaźnika CAGR w systemie uwzględnia precyzyjne określenie czasu trwania inwestycji na podstawie daty pierwszej operacji oraz bieżącej daty. Listing~\ref{lst:cagr-calculation} przedstawia kod funkcji realizującej to obliczenie.
+Obliczanie wskaźnika CAGR w systemie uwzględnia precyzyjne określenie czasu trwania inwestycji na podstawie daty pierwszej operacji oraz bieżącej daty. Listing~\ref{lst:cagr-calculation} przedstawia kod funkcji realizującej to obliczenie.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{typescript}
-    const firstDate = firstOperation.date.toDate();
-    const today = new Date();
-
-    const years = Math.max(
-        (today.getTime() - firstDate.getTime()) / 
-        (1000 * 60 * 60 * 24 * 365.25), 
-        1
-    );
-
     const currentValue = calculateCurrentValue(assets);
     const cagr = (Math.pow(currentValue / investment, 1 / years) - 1) * 100;
 
@@ -85,28 +74,24 @@ Implementacja obliczania wskaźnika CAGR w systemie uwzględnia precyzyjne okre�
 \label{lst:cagr-calculation}
 \end{listing}
 
-\subsection{Wizualizacja kompozycji portfela}
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\linewidth, height=9cm, keepaspectratio]{images/wykres_kolowy.png}
     \caption{Wykres kołowy reprezentujący kompozycję portfela}
-    \label{fig:placeholder}
+    \label{fig:wykres_kolowy}
 \end{figure}
 
-Wizualizacja kompozycji portfela została zrealizowana przy użyciu wykresu kołowego składającego się z dwóch koncentrycznych obwódek. Architektura ta pozwala na jednoczesne przedstawienie dwóch poziomów szczegółowości informacji o strukturze portfela.
+Wizualizacja kompozycji portfela została zrealizowana przy użyciu wykresu kołowego (Rysunek \ref{fig:wykres_kolowy}), składającego się z dwóch obwódek. Architektura ta pozwala na jednoczesne przedstawienie dwóch poziomów szczegółowości informacji o strukturze portfela.
 
-\subsubsection{Struktura dwupoziomowa wykresu}
 
 Wewnętrzna obwódka wykresu przedstawia podział portfela na poszczególne aktywa, takie jak konkretne akcje, obligacje lub lokaty. Każdy segment odpowiada jednemu aktywowi, a jego wielkość jest proporcjonalna do wartości tego aktywa w całym portfelu. Zewnętrzna obwódka agreguje aktywa według ich typu, prezentując udział procentowy akcji, lokat oszczędnościowych oraz innych kategorii instrumentów finansowych w całkowitej wartości portfela.
 
-Takie podejście umożliwia inwestorowi szybką ocenę zarówno dywersyfikacji portfela na poziomie klas aktywów, jak i identyfikację pojedynczych pozycji, które mogą stanowić znaczącą część wartości inwestycji. Dwupoziomowa struktura jest szczególnie przydatna przy ocenie ryzyka koncentracji, ponieważ pozwala zauważyć zarówno nadmierną ekspozycję na pojedyncze aktywo, jak i niewłaściwą alokację między klasami aktywów \cite{Gieraltowska2011}.
+Takie podejście umożliwia inwestorowi szybką ocenę zarówno dywersyfikacji portfela na poziomie klas aktywów, jak i identyfikację pojedynczych pozycji, które mogą stanowić znaczącą część wartości inwestycji. Dwupoziomowa struktura jest szczególnie przydatna przy ocenie ryzyka koncentracji, ponieważ pozwala zauważyć zarówno nadmierną ekspozycję na pojedyncze aktywo, jak i niewłaściwą alokację między klasami aktywów \cite{gieraltowska2011dywersyfikacja}.
 
-\subsubsection{System kolorowania segmentów}
 
-Implementacja systemu kolorowania segmentów wykresu opiera się na zasadzie gradacji jasności dla aktywów należących do tej samej kategorii. Każda kategoria aktywów ma przypisany bazowy kolor, a poszczególne aktywa w ramach tej kategorii otrzymują odcienie o różnej jasności, uporządkowane według wartości ich udziału w portfelu.
+System kolorowania segmentów wykresu opiera się na zasadzie gradacji jasności dla aktywów należących do tej samej kategorii. Każda kategoria aktywów ma przypisany bazowy kolor, a poszczególne aktywa w ramach tej kategorii otrzymują odcienie o różnej jasności, uporządkowane według wartości ich udziału w portfelu.
 
-Funkcja \texttt{createShade} generuje odcienie koloru bazowego poprzez modyfikację komponentu jasności w przestrzeni barw HSL (Hue, Saturation, Lightness). Listing~\ref{lst:create-shade} przedstawia implementację tej funkcji.
+Funkcja \texttt{createShade}, przedstawiona na Listingu \ref{lst:create-shade}, generuje odcienie koloru bazowego poprzez modyfikację komponentu jasności w przestrzeni barw HSL (Hue, Saturation, Lightness).
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{typescript}
@@ -147,4 +132,4 @@ L_{new} = \min\left(L_{max}, L_{base} + i \cdot \frac{(L_{max} - L_{base}) \cdot
 
 gdzie $L_{new}$ to nowa wartość jasności, $L_{max}$ to maksymalna wartość jasności, $L_{base}$ to bazowa wartość jasności z koloru kategorii, $i$ to indeks aktywa po posortowaniu według wartości, $f$ to współczynnik łagodzący gradację, a $n$ to liczba aktywów w kategorii.
 
-Aktywa w ramach każdej kategorii są sortowane malejąco według wartości, a następnie kolorowane od najciemniejszego odcienia dla największego aktywa do najjaśniejszego dla najmniejszego. Takie uporządkowanie kolorów dodatkowo wzmacnia wizualne rozróżnienie między głównymi pozycjami a mniejszymi składnikami portfela, ułatwiając percepcję struktury inwestycji.
+Aktywa w ramach każdej kategorii są sortowane malejąco według wartości, a następnie kolorowane od najciemniejszego odcienia dla największego aktywa do najjaśniejszego dla najmniejszego. Takie uporządkowanie kolorów dodatkowo wzmacnia wizualne rozróżnienie między głównymi pozycjami a mniejszymi składnikami portfela.

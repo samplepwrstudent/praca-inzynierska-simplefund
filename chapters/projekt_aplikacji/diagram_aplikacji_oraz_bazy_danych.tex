@@ -1,0 +1,23 @@
+\section{Diagram C4 aplikacji}
+W celu przejrzystego przedstawienia architektury projektowanej aplikacji zdecydowano się na wykorzystanie diagramów obrazujących zarówno strukturę systemu, jak i organizację danych. Wizualizacja tych elementów stanowi istotny etap dokumentacji technicznej, ponieważ ułatwia zrozumienie zależności pomiędzy komponentami, sposobu przepływu informacji oraz logiki przechowywania danych.
+
+Diagram C4 (Context, Containers, Components, Code) stanowi hierarchiczny sposób dokumentowania architektury systemów informatycznych, zaproponowany przez Simona Browna. \cite{grabis2025empirical} Zakłada on prezentację struktury systemu na czterech poziomach szczegółowości: kontekst systemowy (relacje z użytkownikami i systemami zewnętrznymi), kontenery (główne elementy techniczne aplikacji), komponenty (moduły wewnątrz kontenerów) oraz kod (szczegóły implementacyjne na poziomie klas i funkcji).
+
+W przypadku omawianej pracy zdecydowano się na prezentację tylko drugiego poziomu: kontenerów. Diagram \ref{fig:diagram_c4} przedstawia główne elementy techniczne aplikacji: frontend, backend oraz zewnętrzne usługi, wraz z relacjami między nimi. 
+
+
+
+
+
+%\section*{Diagram bazy danych Firestore}
+%Aplikacja wykorzystuje Firestore - bazę danych typu NoSQL, oferowaną przez platformę Firebase. W przeciwieństwie do relacyjnych baz danych, Firestore organizuje dane w postaci kolekcji dokumentów, które mogą zawierać zagnieżdżone struktury oraz pola o różnych typach.
+
+%Diagram \ref{fig:diagram_bazy} przedstawia strukturę bazy danych aplikacji, obejmującą kolekcje związane z użytkownikami, operacjami finansowymi, cenami akcji oraz symbolami giełdowymi. Każda kolekcja została opisana wraz z kluczowymi polami, typami danych oraz logiką identyfikatorów dokumentów. Diagram odzwierciedla rzeczywisty model danych zaimplementowany w aplikacji, uwzględniając zarówno dane użytkowników, jak i globalne zasoby współdzielone między użytkownikami.
+
+
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=1\linewidth]{images/diagram_bazy_danych.png}
+%    \caption{Diagram bazy danych}
+%    \label{fig:diagram_bazy}
+%\end{figure}

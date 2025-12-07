@@ -1,15 +1,15 @@
 \Chapter{Wprowadzenie}\label{chapter:introduction}
-Celem niniejszej pracy inżynierskiej jest zaprojektowanie i implementacja aplikacji wspomagającej indywidualnych inwestorów w monitorowaniu ich portfela inwestycyjnego w sposób przejrzysty, prosty oraz dostosowany do realnych potrzeb użytkownika. Współczesne rynki finansowe charakteryzują się coraz większą dostępnością instrumentów inwestycyjnych, takich jak akcje, fundusze ETF, obligacje, lokaty bankowe czy produkty oszczędnościowe oferowane przez instytucje finansowe. Dynamiczny rozwój platform brokerskich oraz niskie bariery wejścia sprawiają, że nawet początkujący inwestorzy dysponują zróżnicowanymi portfelami, rozproszonymi często pomiędzy kilkoma podmiotami (np. różne biura maklerskie, banki, obligacje). 
+Celem przedstawianej pracy inżynierskiej jest zaprojektowanie i implementacja aplikacji wspomagającej indywidualnych inwestorów w monitorowaniu ich portfela inwestycyjnego w sposób przejrzysty, prosty oraz dostosowany do rzeczywistych potrzeb użytkownika. Współczesne rynki finansowe charakteryzują się coraz większą dostępnością instrumentów inwestycyjnych, takich jak akcje, fundusze ETF, obligacje, lokaty bankowe czy produkty oszczędnościowe oferowane przez instytucje finansowe. Dynamiczny rozwój platform brokerskich oraz niskie bariery wejścia sprawiają, że nawet początkujący inwestorzy dysponują zróżnicowanymi portfelami, często rozproszonymi pomiędzy kilkoma podmiotami (np. różne biura maklerskie, banki, obligacje). 
 
-\section{Sformułowanie problemu}
-W takich warunkach prowadzenie systematycznej, spójnej i czytelnej ewidencji staje się zadaniem czasochłonnym oraz podatnym na błędy. Tradycyjne metody, oparte na arkuszach kalkulacyjnych lub ręcznym zapisywaniu danych, okazują się niewystarczające, gdy liczba operacji rośnie, a inwestor oczekuje bieżącej informacji o strukturze portfela, wyniku historycznym, poziomie zysku lub straty oraz ekspozycji na poszczególne klasy aktywów.
+\section*{Sformułowanie problemu}
+Opisane uwarunkowania sprawiają, że prowadzenie systematycznej, spójnej i czytelnej ewidencji staje się zadaniem czasochłonnym oraz podatnym na błędy. Tradycyjne metody, oparte na arkuszach kalkulacyjnych lub ręcznym zapisywaniu danych, okazują się niewystarczające, gdy liczba operacji rośnie, a inwestor oczekuje bieżącej informacji o strukturze portfela, wynikach historycznych, bilansie oraz ekspozycji na poszczególne klasy aktywów.
 
 Problem ten jest szczególnie widoczny w przypadku osób łączących inwestycje giełdowe, oszczędnościowe i gotówkowe, które są raportowane w odmienny sposób, w różnych systemach i formatach danych. Brak zintegrowanego, intuicyjnego narzędzia powoduje, że inwestor ma utrudnioną ocenę swojej sytuacji finansowej, co może prowadzić do podejmowania decyzji na podstawie niepełnych lub nieaktualnych informacji.
 
-\section{Cele pracy}
-W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwiązania, które zminimalizuje konieczność ręcznego przetwarzania danych i umożliwi użytkownikowi szybkie uzyskanie syntetycznego obrazu własnych inwestycji. Opracowywana aplikacja ma za zadanie integrować informacje o różnych typach aktywów, prezentować je w jednolitym, zrozumiałym interfejsie oraz zapewniać możliwość śledzenia kluczowych parametrów, takich jak wartość portfela, stopa zwrotu czy udział poszczególnych instrumentów w całości inwestycji. Istotnym aspektem celu pracy jest także poprawa czytelności i ergonomii monitorowania portfela poprzez zastosowanie odpowiednich wizualizacji danych (wykresy, zestawienia, wskaźniki), które ułatwiają porównywanie wyników oraz identyfikację trendów.
+\section*{Cele pracy}
+W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwiązania, które zminimalizuje konieczność ręcznego przetwarzania danych i umożliwi użytkownikowi szybkie uzyskanie syntetycznego obrazu jego własnych inwestycji. Opracowywana aplikacja ma za zadanie integrować informacje o różnych typach aktywów, prezentować je w jednolitym, zrozumiałym interfejsie oraz zapewniać możliwość śledzenia kluczowych parametrów, takich jak wartość portfela, stopa zwrotu czy udział poszczególnych instrumentów w całości inwestycji. Istotnym aspektem celu pracy jest także czytelność oraz przejrzystość interfejsu poprzez zastosowanie odpowiednich wizualizacji danych (wykresy, zestawienia, wskaźniki), które ułatwiają porównywanie wyników. Poniżej przedstawiono wymagania funkcjonalne oraz niefunkcjonalne aplikacji.
 
-\subsection{Wymagania funkcjonalne}
+\subsection*{Wymagania funkcjonalne}
 
 \subsubsection{Rejestracja i logowanie użytkownika}
 \begin{itemize}
@@ -20,9 +20,8 @@ W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwi�
 
 \subsubsection{Zarządzanie portfelem inwestycyjnym}
 \begin{itemize}
-    \item Użytkownik może dodawać operacje: zakup/sprzedaż akcji, lokaty, depozytu.
+    \item Użytkownik może dodawać operacje: zakup/sprzedaż akcji, lokaty oraz depozyty.
     \item Użytkownik może usuwać istniejące operacje.
-    \item Użytkownik może filtrować i sortować historię operacji.
     \item Użytkownik może importować historię operacji z brokera XTB.
 \end{itemize}
 
@@ -30,7 +29,7 @@ W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwi�
 \begin{itemize}
     \item Aplikacja wyświetla aktualną wartość portfela użytkownika.
     \item Aplikacja wyświetla strukturę portfela według klas aktywów w formie wykresu.
-    \item Aplikacja prezentuje podstawowe wskaźniki (zysk/strata, stopa zwrotu).
+    \item Aplikacja prezentuje podstawowe wskaźniki finansowe (zysk/strata, stopa zwrotu).
 \end{itemize}
 
 \subsubsection{Kursy walut i wycena aktywów}
@@ -40,26 +39,14 @@ W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwi�
     \item Aplikacja przelicza wartości instrumentów i portfela na polski złoty.
 \end{itemize}
 
-\subsubsection{Interfejs użytkownika}
-\begin{itemize}
-    \item Aplikacja działa jako aplikacja jednostronicowa.
-    \item Użytkownik może przełączać motyw jasny/ciemny.
-\end{itemize}
 
-
-
-\subsection{Wymagania niefunkcjonalne}
+\subsection*{Wymagania niefunkcjonalne}
 
 \subsubsection{Wydajność}
 \begin{itemize}
-    \item Aplikacja powinna ładować się średnio poniżej minuty.
-    \item Operacje takie jak dodanie transakcji lub zmiana widoku powinny być wykonywane bez przeładowania strony.
-    \item Dane często używane powinny być buforowane po stronie klienta.
-\end{itemize}
-
-\subsubsection{Niezawodność i dostępność}
-\begin{itemize}
-    \item Aplikacja powinna obsługiwać błędy zewnętrznych serwisów.
+    \item Largest Contentful Paint (LCP) — czas renderowania głównej treści widocznej dla użytkownika powinien wynosić mniej niż 2,5 sekundy.
+    \item Interaction to Next Paint (INP) — czas reakcji interfejsu na interakcję użytkownika powinien być krótszy niż 200 ms.
+    \item Cumulative Layout Shift (CLS) — wskaźnik stabilności wizualnej strony powinien pozostawać poniżej wartości 0,1.
 \end{itemize}
 
 \subsubsection{Bezpieczeństwo}
@@ -71,10 +58,10 @@ W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwi�
 \subsubsection{Interfejs użytkownika}
 \begin{itemize}
     \item Aplikacja powinna korzystać ze spójnego systemu projektowania.
-    \item Formularze powinny posiadać walidację i czytelne komunikaty błędów.
+    \item Formularze powinny posiadać walidację oraz czytelne komunikaty błędów.
 \end{itemize}
 
-\subsubsection{Utrzymywalność i jakość oprogramowania}
+\subsubsection{Jakość oprogramowania}
 \begin{itemize}
     \item Wybrany język programowania powinien pozwalać na statyczne typowanie.
     \item Aplikacja powinna być podzielona na moduły.
@@ -82,5 +69,19 @@ W odpowiedzi na wskazane trudności, praca koncentruje się na stworzeniu rozwi�
 \end{itemize}
 
 
-\section{Zarys pracy}
-Zarysuj strukturę swojej pracy dyplomowej. Ogólnie przedstawienie pracy. Przykładowo: ,,Praca dzieli się na $7$ rozdziałów (\dots)''. Rozdział \ref{chapter:politechnika} dotyczy (\dots). Temat został rozwinięty~w~\ref{chapter:podrozdzial}.
+\section*{Zarys pracy}
+Praca została podzielona na siedem rozdziałów, z których każdy koncentruje się na odmiennym aspekcie procesu projektowania oraz realizacji aplikacji. 
+
+W rozdziale pierwszym przedstawiono motywacje stojące u podstaw realizacji projektu, a także sformułowano główne cele pracy.
+
+Rozdział drugi zawiera przegląd dostępnych na rynku rozwiązań o zbliżonej funkcjonalności. Analizie poddano ich możliwości, zalety oraz ograniczenia, co stanowi punkt odniesienia dla określenia unikatowych cech projektowanej aplikacji.
+
+W kolejnym rozdziale uzasadniono wybór zastosowanych technologii, obejmujących języki programowania, frameworki oraz narzędzia deweloperskie, wskazując ich wpływ na efektywność procesu tworzenia systemu.
+
+Najobszerniejszy, czwarty rodział, zawiera szczegółowy opis architektury systemu. Zaprezentowano w nim diagram C4 oraz schemat bazy danych, a także scharakteryzowano kluczowe komponenty aplikacji, w tym moduły odpowiedzialne za autoryzację, zarządzanie portfelem, import danych z brokera XTB, prezentację statystyk oraz integrację z zewnętrznymi źródłami danych giełdowych i walutowych.
+
+Rozdział piąty rozwija zagadnienia omówione wcześniej, koncentrując się na aspektach związanych z bezpieczeństwem projektowanego systemu. Przedstawiono w nim zastosowane mechanizmy uwierzytelniania i autoryzacji, sposoby ochrony danych użytkowników oraz reguły bezpieczeństwa bazy danych Firestore.
+
+W rozdziale szóstym opisano proces testowania aplikacji, obejmujący testy end-to-end wykonywane z wykorzystaniem narzędzia Cypress oraz audyt wskaźników jakościowych przeprowadzony przy użyciu Google Lighthouse.
+
+Rozdział siódmy stanowi podsumowanie pracy. Zawarto w nim wnioski płynące z realizacji projektu, ocenę stopnia osiągnięcia założonych celów oraz propozycje dalszych kierunków rozwoju aplikacji, obejmujące potencjalne rozszerzenia funkcjonalności i udoskonalenie istniejących rozwiązań.

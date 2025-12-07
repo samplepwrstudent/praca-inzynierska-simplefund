@@ -1,13 +1,16 @@
 \Chapter{Projekt aplikacji}
 
-Niniejszy rozdział przedstawia szczegółowy projekt systemu \textit{SimpleFund}, obejmujący zarówno architekturę techniczną aplikacji, jak i aspekty funkcjonalne poszczególnych modułów. W pierwszej części zaprezentowano dokumentację architektury w postaci diagramu C4. Uzupełnieniem tej dokumentacji jest diagram struktury bazy danych w Cloud Firestore, który pokazuje organizację przechowywanych informacji oraz relacje między encjami.
+Poniższy rozdział przedstawia szczegółowy projekt systemu, obejmujący zarówno architekturę techniczną aplikacji, jak i aspekty funkcjonalne poszczególnych modułów.
 
-W drugiej części rozdziału omówiono szczegółowo funkcjonalność poszczególnych sekcji aplikacji z perspektywy użytkownika końcowego. Przedstawiono interfejs logowania i rejestracji wraz z mechanizmami autoryzacji, system zarządzania operacjami finansowymi, funkcjonalność importu danych z platformy XTB, widok portfela użytkownika z zestawieniem posiadanych aktywów, moduł statystyk prezentujący kluczowe wskaźniki efektywności inwestycji, a także wizualizację rozkładu portfela w postaci wykresu kołowego.
+\input{chapters/projekt_aplikacji/diagram_aplikacji_oraz_bazy_danych}
+\input{chapters/projekt_aplikacji/firestore}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{c4.pdf}
+    \caption{Diagram C4 aplikacji}
+    \label{fig:diagram_c4}
+\end{figure}
 
-Dokumentacja projektowa zawarta w tym rozdziale stanowi pomost między wcześniej omówionymi wymaganiami funkcjonalnymi i niefunkcjonalnymi a ostateczną implementacją systemu, prezentując koncepcje, decyzje projektowe oraz rozwiązania przyjęte w celu realizacji założonego zakresu funkcjonalności aplikacji.
-
-\input{chapters/projekt_aplikacji/diagram_c4}
-\input{chapters/projekt_aplikacji/diagram_bazy_danych}
 \input{chapters/projekt_aplikacji/interfejs_uzytkownika}
 \input{chapters/projekt_aplikacji/autoryzacja}
 \input{chapters/projekt_aplikacji/dodawanie_operacji}

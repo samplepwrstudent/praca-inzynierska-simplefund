@@ -1,21 +1,19 @@
 \section{Portfel użytkownika}
 
-Portfel użytkownika stanowi centralne miejsce w aplikacji, gdzie prezentowane są zagregowane i przetworzone dane dotyczące wszystkich przeprowadzonych operacji finansowych. Moduł ten odpowiada za obliczanie i wyświetlanie aktualnego stanu posiadanych aktywów, ich wartości rynkowej oraz bilansu wynikającego z różnicy między wartością bieżącą a kwotą zainwestowaną. Wszystkie wartości monetarne w portfelu są przedstawiane w walucie PLN, co zapewnia spójność prezentacji danych i ułatwia użytkownikowi porównanie różnych instrumentów finansowych denominowanych w różnych walutach.
+Portfel użytkownika stanowi centralne miejsce w aplikacji, gdzie prezentowane są zagregowane i przetworzone dane dotyczące wszystkich przeprowadzonych operacji finansowych. Moduł ten odpowiada za obliczanie i wyświetlanie aktualnego stanu posiadanych aktywów, ich wartości rynkowej oraz bilansu wynikającego z różnicy między wartością bieżącą a kwotą zainwestowaną. Wszystkie wartości monetarne w portfelu są przedstawiane w walucie PLN, co zapewnia spójność prezentacji danych. Aktywa w portfelu przedstawione są w postaci tabelarycznej, jak na Rysunku \ref{fig:portfel_uztywkonika}.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{images/portfel.png}
     \caption{Tabela portfela użytkownika}
     \label{fig:portfel_uztywkonika}
 \end{figure}
 
-\subsection{Agregacja danych operacji}
 
-System agreguje dane z poszczególnych operacji użytkownika, grupując je według nazwy aktywa i typu instrumentu finansowego. Proces agregacji uwzględnia operacje kupna i sprzedaży, obliczając dla każdego aktywa jego aktualną pozycję oraz łączną kwotę zainwestowaną. Implementacja tego mechanizmu znajduje się w funkcji \texttt{calculateAssetPositions}, która przetwarza listę operacji i zwraca skonsolidowane dane o pozycjach użytkownika.
+System agreguje dane z poszczególnych operacji użytkownika, grupując je według nazwy aktywa i typu instrumentu finansowego. Proces agregacji uwzględnia operacje kupna i sprzedaży, obliczając dla każdego aktywa jego aktualną pozycję oraz łączną kwotę zainwestowaną. Mechanizm ten znajduje się w funkcji \texttt{calculateAssetPositions}, która przetwarza listę operacji i zwraca skonsolidowane dane o pozycjach użytkownika.
 
-\subsection{Wycena akcji}
 
-Wartość akcji w portfelu obliczana jest jako iloczyn trzech komponentów: liczby posiadanych akcji, ich aktualnej ceny oraz kursu wymiany waluty na PLN. System automatycznie pobiera aktualne notowania z Yahoo Finance API, jednak użytkownik ma możliwość ręcznego wprowadzenia ceny dla instrumentów, które nie są dostępne w tym serwisie lub gdy użytkownik chce posługiwać się własną wyceną.
+Wartość akcji w portfelu obliczana jest jako iloczyn trzech komponentów: liczby posiadanych akcji, ich aktualnej ceny oraz kursu wymiany waluty na PLN (Listing \ref{lst:stock-valuation}). System automatycznie pobiera aktualne notowania, jednak użytkownik ma możliwość ręcznego wprowadzenia ceny dla instrumentów, które nie są dostępne, lub gdy chce posługiwać się własną wyceną.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{typescript}
@@ -35,61 +33,32 @@ if (assetType === 'stock') {
 Wartość akcji w PLN można zapisać wzorem:
 
 \begin{equation}
-W_{PLN} = q \cdot p \cdot k
+W_{PLN} = w \cdot c \cdot k
 \end{equation}
 
-gdzie $q$ oznacza liczbę posiadanych akcji, $p$ to aktualna cena jednostkowa w walucie instrumentu, a $k$ to kurs przeliczeniowy waluty obcej na PLN. Bilans pozycji obliczany jest jako różnica między wartością bieżącą a całkowitą kwotą zainwestowaną:
+gdzie $w$ oznacza liczbę posiadanych akcji, $c$ to aktualna cena jednostkowa w walucie instrumentu, a $k$ to kurs przeliczeniowy waluty obcej na PLN. Bilans pozycji obliczany jest jako różnica między wartością bieżącą a całkowitą kwotą zainwestowaną:
 
 \begin{equation}
-B = W_{PLN} - W_{inv}
+B = W_{PLN} - W_{total}
 \end{equation}
 
-gdzie $W_{inv}$ oznacza łączną kwotę wydaną na zakup danego aktywa.
+gdzie $W_{total}$ oznacza łączną kwotę wydaną na zakup danego aktywa.
 
-\subsection{Mechanizm własnych cen instrumentów}
 
-System umożliwia użytkownikowi ręczne wprowadzanie i modyfikację cen instrumentów giełdowych. Funkcjonalność ta jest szczególnie istotna w przypadkach, gdy Yahoo Finance API nie dostarcza notowań dla danego instrumentu lub gdy użytkownik preferuje posługiwanie się własną wyceną aktywów. Niestandardowe ceny są przechowywane w kolekcji \texttt{custom\_stock} w bazie Firestore, gdzie każdy dokument identyfikowany jest kombinacją identyfikatora użytkownika i symbolu instrumentu.
-
-\begin{listing}[h]
-\begin{minted}[fontsize=\small, linenos]{typescript}
-export const setCustomStockPrice = async (
-    userId: string,
-    symbol: string,
-    price: number,
-    stockInfo?: Partial<StockInfo>
-): Promise<void> => {
-    const docId = `${userId}_${symbol}`;
-    const docRef = doc(db, 'custom_stock', docId);
-
-    const data: Partial<StockInfo> = {
-        symbol,
-        currentPrice: price,
-        lastUpdate: serverTimestamp() as Timestamp,
-        ...stockInfo
-    };
-
-    await setDoc(docRef, data, { merge: true });
-};
-\end{minted}
-\caption{Funkcja zapisująca niestandardową cenę instrumentu giełdowego}
-\label{lst:set-custom-price}
-\end{listing}
+System umożliwia użytkownikowi ręczne wprowadzanie i modyfikację cen instrumentów giełdowych. Funkcjonalność ta jest szczególnie istotna w przypadkach, gdy Yahoo Finance API nie dostarcza notowań dla danego instrumentu lub gdy użytkownik preferuje posługiwanie się własną wyceną aktywów.
 
 W interfejsie użytkownika cena jest prezentowana jako edytowalne pole tekstowe w tabeli portfela \ref{fig:portfel_uztywkonika}. Użytkownik może wprowadzić nową wartość, a po opuszczeniu pola system automatycznie zapisuje zmianę w bazie danych i przelicza wszystkie zależne wartości w portfelu.
 
-% Komentarz: Tutaj warto umieścić zrzut ekranu pokazujący edytowalne pole ceny w tabeli portfela
-
-\subsection{Wycena lokat terminowych}
 
 Lokaty terminowe w systemie są wyceniane z uwzględnieniem kapitalizacji odsetek w czasie. System oblicza aktualną wartość lokaty na podstawie kapitału początkowego, oprocentowania rocznego oraz czasu trwania inwestycji. Wartość lokaty jest aktualizowana dynamicznie przy każdym odświeżeniu portfela, uwzględniając aktualną datę.
 
 Obliczenie wartości lokaty realizowane jest zgodnie z modelem procentu składanego:
 
 \begin{equation}
-FV = PV \cdot \left(1 + \frac{r}{100}\right)^t
+PW = SW \cdot \left(1 + \frac{s}{100}\right)^l
 \end{equation}
 
-gdzie $FV$ oznacza przyszłą wartość lokaty, $PV$ to wartość początkowa (kapitał), $r$ to roczna stopa procentowa wyrażona w procentach, a $t$ to czas trwania lokaty wyrażony w latach.
+gdzie $PW$ oznacza przyszłą wartość lokaty, $SW$ to wartość początkowa (startowa), $s$ to roczna stopa procentowa wyrażona w procentach, a $l$ to czas trwania lokaty wyrażony w latach.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{typescript}

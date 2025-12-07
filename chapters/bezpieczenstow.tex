@@ -1,42 +1,72 @@
-\chapter{Bezpieczeństwo i jakość danych}
+\chapter{Bezpieczeństwo}
 
-System zarządzania portfelem inwestycyjnym musi zapewnić ochronę przed nieautoryzowanym dostępem oraz zagwarantować integralność przechowywanych danych. Implementacja mechanizmów bezpieczeństwa w aplikacji obejmuje ochronę realizowaną zarówno po stronie klienta, jak i po stronie serwera bazy danych. Dodatkowo system walidacji danych oraz odpowiednia obsługa stanów ładowania i błędów przyczyniają się do zapewnienia wysokiej jakości i niezawodności funkcjonowania aplikacji.
+System zarządzania portfelem inwestycyjnym powinien zapewnić ochronę przed nieautoryzowanym dostępem oraz zagwarantować integralność przechowywanych danych. Wdrożenie mechanizmów bezpieczeństwa w aplikacji obejmuje ochronę realizowaną zarówno po stronie klienta, jak i po stronie serwera bazy danych.
 
-\section{Ograniczenie dostępu do zasobów}
+\section*{Firestore Security Rules}
 
-Podstawową zasadą bezpieczeństwa w aplikacji jest wymóg autoryzacji użytkownika przed uzyskaniem dostępu do jakichkolwiek danych portfela. Mechanizm ten realizowany jest za pomocą reguł bezpieczeństwa Firebase Firestore po stronie serwera oraz chronionych tras (protected routes) w aplikacji klienckiej.
+Reguły bezpieczeństwa Firestore  stanowią mechanizm ochrony danych realizowany po stronie serwera\cite{firebase2025rules}.  Są one deklaratywnym systemem kontroli dostępu, umożliwiającym precyzyjne określenie, którzy użytkownicy mogą odczytywać lub modyfikować dane znajdujące się w poszczególnych kolekcjach i dokumentach. Konfiguracja reguł bezpieczeństwa jest obligatoryjnym elementem każdej aplikacji wykorzystującej Firestore, przy czym domyślnie dostęp do wszystkich kolekcji pozostaje zablokowany.
 
-\subsection{Reguły bezpieczeństwa Firebase Firestore}
+Reguły bezpieczeństwa działają na zasadzie weryfikacji każdego zapytania do bazy danych po stronie serwera, jeszcze przed wykonaniem operacji. Dzięki temu, nawet jeśli potencjalny atakujący uzyska dostęp do konfiguracji klienta aplikacji, nie będzie w stanie obejść zabezpieczeń, ponieważ są one egzekwowane na poziomie infrastruktury chmurowej. Reguły definiowane są w dedykowanym języku deklaratywnym, który umożliwia precyzyjne określenie warunków dostępu w oparciu o kontekst żądania, dane uwierzytelnienia użytkownika oraz zawartość dokumentów.
 
-Firestore Security Rules stanowią deklaratywny język definiowania warunków dostępu do dokumentów w bazie danych. Reguły te są wykonywane po stronie serwera, co uniemożliwia ich obejście przez modyfikację kodu aplikacji klienckiej.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/firebase_rules2.png}
+    \caption{Reguły firestore widziane z poziomu Firebase Console wraz z historią zmian}
+    \label{fig:placeholder}
+\end{figure}
+
+
+W omawianej aplikacji zdefiniowano reguły bezpieczeństwa dla pięciu głównych kolekcji danych. Podstawową zasadą przyjętą w projekcie jest segregacja danych użytkowników poprzez wymuszenie, aby każda operacja była powiązana z identyfikatorem użytkownika wykonującego żądanie. Ilustruje to kod na Listingu \ref{lst:firestore-rules-operations}, który jest konfiguracją reguł dla kolekcji \texttt{operations}.
 
 \begin{listing}[h]
-\begin{minted}[fontsize=\small, linenos]{text}
-rules_version = '2';
-
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    // users collection
-    match /users/{userId} {
-      allow read, write: if request.auth != null 
-                         && request.auth.uid == userId;
-    }
-  }
+\begin{minted}[fontsize=\small, linenos]{javascript}
+// Operations collection
+match /operations/{operationId} {
+  allow read: if request.auth != null && 
+              resource.data.userId == request.auth.uid;
+  allow create: if request.auth != null && 
+                request.resource.data.userId == request.auth.uid;
+  allow update, delete: if request.auth != null && 
+                        resource.data.userId == request.auth.uid;
 }
 \end{minted}
-\caption{Fragment reguł bezpieczeństwa Firebase Firestore}
-\label{lst:firestore-rules}
+\caption{Reguły zabezpieczeń dla kolekcji operacji finansowych}
+\label{lst:firestore-rules-operations}
 \end{listing}
 
-Każda reguła weryfikuje dwa podstawowe warunki: istnienie sesji autentykacyjnej użytkownika oraz zgodność identyfikatora użytkownika wykonującego operację z identyfikatorem właściciela danych.
+Przedstawiona reguła definiuje warunki dostępu do kolekcji \texttt{operations}, w której przechowywane są wszystkie transakcje finansowe użytkowników. Operator \texttt{match} określa ścieżkę do dokumentów w kolekcji, gdzie zmienna \texttt{\{operationId\}} reprezentuje identyfikator konkretnego dokumentu operacji. Dla operacji odczytu (\texttt{allow read}) weryfikowane są dwa warunki: po pierwsze, użytkownik musi być uwierzytelniony (\texttt{request.auth != null}), po drugie, pole \texttt{userId} w istniejącym dokumencie (\texttt{resource.data.userId}) musi być zgodne z identyfikatorem użytkownika wykonującego żądanie (\texttt{request.auth.uid}). Warunek tworzenia nowych dokumentów (\texttt{allow create}) dodatkowo weryfikuje, czy tworzony dokument zawiera pole \texttt{userId} odpowiadające identyfikatorowi zalogowanego użytkownika, co uniemożliwia użytkownikom tworzenie operacji w imieniu innych osób.
 
-\subsection{Chronione trasy w aplikacji}
-
-Ochrona po stronie klienta realizowana jest poprzez system chronionych tras, który weryfikuje stan autoryzacji użytkownika przed renderowaniem komponentów wymagających uwierzytelnienia. Mechanizm ten zapobiega nie tylko nieautoryzowanemu dostępowi do interfejsu użytkownika, ale również automatycznie przekierowuje niezalogowanych użytkowników do strony logowania.
+Funkcje operujące na danych, takie jak operacje dodawania przedstawione na Listingu \ref{lst:add-operation-function}, nie muszą zapewniać logiki autoryzacji, ponieważ jest ona egzekwowana automatycznie przez warstwę Firestore.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{typescript}
+export const addOperation = async (
+    userId: string,
+    operation: Omit<Operation, 'userId'>
+): Promise<string> => {
+    const operationsRef = collection(db, 'operations');
+
+    const operationData: Operation = {
+        ...operation,
+        userId,
+    };
+
+    const docRef = await addDoc(operationsRef, operationData);
+    return docRef.id;
+};
+\end{minted}
+\caption{Funkcja dodawania operacji finansowej do bazy danych}
+\label{lst:add-operation-function}
+\end{listing}
+
+Zastosowany model zabezpieczeń realizuje zasady bezpiecznego projektowania aplikacji, w tym zasadę minimalnych uprawnień \cite{ibm2018polp}, zgodnie z którą użytkownicy otrzymują dostęp wyłącznie do zasobów niezbędnych do wykonania swoich zadań, oraz zasadę wielowarstwowej ochrony \cite{bitdefender2025defenseindepth}, polegającą na egzekwowaniu mechanizmów autoryzacji na poziomie infrastruktury, niezależnie od aplikacji klienckiej.
+
+\section*{Chronione trasy w aplikacji}
+
+Ochrona po stronie klienta realizowana jest poprzez system chronionych tras \cite{dennisivy2022protectedroutes}, który weryfikuje stan autoryzacji użytkownika przed renderowaniem komponentów wymagających uwierzytelnienia. Mechanizm ten zapobiega nie tylko nieautoryzowanemu dostępowi do interfejsu użytkownika, ale również automatycznie przekierowuje niezalogowanych użytkowników na stronę logowania. Realizację tego mechanizmu zaprezentowano w Listingu \ref{lst:protected-routes}.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{tsx}
 function App() {
   const { user, loading } = useAuthState();
 
@@ -71,25 +101,6 @@ function App() {
 }
 
 \end{minted}
-\caption{Implementacja chronionych tras w aplikacji}
+\caption{Realizacja chronionych tras w aplikacji}
 \label{lst:protected-routes}
-\end{listing}
-
-\section{Walidacja danych wejściowych}
-
-System walidacji danych oparty na bibliotece Zod stanowi pierwszą linię obrony przed wprowadzeniem nieprawidłowych lub potencjalnie niebezpiecznych danych do systemu. Walidacja wykonywana jest na wczesnym etapie przetwarzania danych, zanim zostaną one przesłane do bazy danych lub wykorzystane w obliczeniach.
-
-\begin{listing}[h]
-\begin{minted}[fontsize=\small, linenos]{typescript}
-const stockOperationSchema = z.object({
-    type: z.enum(['buy', 'sell']),
-    symbol: z.string().min(1, 'Symbol jest wymagany'),
-    assetName: z.string().min(1, 'Nazwa jest wymagana'),
-    quantity: z.number().positive('Wolumen musi być większy od 0'),
-    pricePerUnit: z.number().positive('Cena musi być większa od 0'),
-    currency: z.string().min(1, 'Waluta jest wymagana'),
-});
-\end{minted}
-\caption{Schemat walidacji formularza operacji na akcjach}
-\label{lst:zod-validation}
 \end{listing}

@@ -1,27 +1,27 @@
 \section{Serwis Backend}
 
-Warstwa backendowa aplikacji została zrealizowana jako lekki serwis REST API zbudowany w technologii Flask. Aplikacja została wdrożona na platformie Heroku, która oferuje bezpłatny hosting dla aplikacji webowych dla studentów wraz z automatycznym zarządzaniem infrastrukturą oraz skalowalność. Platforma Heroku automatycznie wykrywa aplikacje Pythonowe na podstawie pliku \texttt{requirements.txt} i konfiguruje środowisko uruchomieniowe zgodnie z zadeklarowanymi zależnościami.
+Warstwa backendowa aplikacji została zrealizowana jako lekki serwis REST API \cite{ovh2020restapi} zbudowany w technologii Flask. Aplikacja została wdrożona na platformie Heroku, która oferuje bezpłatny hosting dla aplikacji webowych dla studentów wraz z automatycznym zarządzaniem infrastrukturą oraz skalowalność. Platforma Heroku automatycznie wykrywa aplikacje Pythonowe na podstawie pliku \texttt{requirements.txt} i konfiguruje środowisko uruchomieniowe zgodnie z zadeklarowanymi zależnościami.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\linewidth]{images/widok_panelu_heroku.png}
+    \includegraphics[width=0.8\linewidth]{images/widok_panelu_heroku.png}
     \caption{Widok z panelu Heroku}
     \label{fig:placeholder}
 \end{figure}
 
-Plik \texttt{Procfile} definiuje typy procesów oraz komendy uruchamiające aplikację. W przypadku niniejszego projektu plik ten zawiera jedną linię określającą proces typu \texttt{web}, co wskazuje na aplikację webową obsługującą ruch HTTP.
+Zawartość pliku \texttt{Procfile} przedstawiona na Listingu \ref{lst:procfile} definiuje typy procesów oraz komendy uruchamiające aplikację. W przypadku omawianego projektu plik ten zawiera jedną linię określającą proces typu \texttt{web}, co wskazuje na aplikację webową obsługującą ruch HTTP.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small]{text}
 web: gunicorn app:app
 \end{minted}
-\caption{Zawartość pliku \texttt{Procfile} definiującego proces aplikacji}
+\caption{Zawartość pliku \texttt{Procfile}}
 \label{lst:procfile}
 \end{listing}
 
 Powyższa konfiguracja instruuje Heroku, aby uruchomił serwer WSGI Gunicorn z modułem \texttt{app} oraz instancją aplikacji Flask o nazwie \texttt{app}. Gunicorn stanowi produkcyjny serwer HTTP dla aplikacji Pythonowych, zapewniający lepszą wydajność i stabilność w porównaniu do wbudowanego serwera deweloperskiego Flask.
 
-Plik \texttt{requirements.txt} specyfikuje wszystkie zależności projektu wraz z konkretnymi wersjami bibliotek, co gwarantuje replikowalność środowiska uruchomieniowego.
+Plik \texttt{requirements.txt} (Listing \ref{lst:requirements}) jest konieczny do poprawnego wdrożenia aplikacji w serwisie Heroku. Specyfikuje on wszystkie zależności projektu wraz z konkretnymi wersjami bibliotek, \cite{danesawszedzie2024requirements} co gwarantuje replikowalność środowiska uruchomieniowego.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small]{text}
@@ -34,9 +34,8 @@ gunicorn==21.2.0
 \label{lst:requirements}
 \end{listing}
 
-\subsection{Integracja z Yahoo Finance}
 
-Główną funkcjonalnością serwisu backendowego jest pobieranie aktualnych danych giełdowych za pośrednictwem biblioteki \texttt{yfinance}. Biblioteka ta stanowi nieoficjalny wrapper API Yahoo Finance, umożliwiający programowy dostęp do historycznych oraz bieżących danych rynkowych dla różnych instrumentów finansowych. 
+Główną funkcjonalnością serwisu backendowego jest pobieranie aktualnych danych giełdowych za pośrednictwem biblioteki \texttt{yfinance}. Biblioteka ta stanowi nieoficjalny pośrednik do API Yahoo Finance, umożliwiający programowy dostęp do historycznych oraz bieżących danych rynkowych dla różnych instrumentów finansowych. 
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{python}
@@ -60,25 +59,21 @@ def get_stock_info():
         }
         
         return jsonify(stock_data)
+        # ...
 \end{minted}
 \caption{Fragment endpointu pobierającego dane giełdowe}
 \label{lst:stock-endpoint}
 \end{listing}
 
-Funkcja przyjmuje parametr \texttt{ticker} z URL, pobiera historyczne dane za pomocą metody \texttt{history()}, a następnie ekstrahuje ostatni dostępny rekord zawierający najbardziej aktualne informacje. Dane są następnie formatowane i zwracane jako obiekt JSON zawierający cenę bieżącą, cenę otwarcia, wartości ekstremalne oraz wolumen obrotu.
+Funkcja przyjmuje parametr \texttt{ticker} z URL, pobiera historyczne dane za pomocą metody \texttt{history()}, a następnie ekstrahuje ostatni dostępny rekord zawierający najbardziej aktualne informacje. Dane są następnie formatowane i zwracane jako obiekt JSON zawierający cenę bieżącą, cenę otwarcia, wartości ekstremalne oraz wolumen obrotu. Jej sposób działania przedstawiono na Listingu \ref{lst:stock-endpoint}.
 
-\subsection{Obsługa CORS}
 
-Cross-Origin Resource Sharing (CORS) stanowi mechanizm bezpieczeństwa implementowany przez przeglądarki internetowe, który kontroluje dostęp do zasobów serwera z różnych źródeł. Domyślnie przeglądarki blokują żądania HTTP wykonywane przez kod JavaScript do domen innych niż ta, z której pochodzi strona internetowa. Jest to część polityki Same-Origin Policy, mającej na celu ochronę przed atakami typu Cross-Site Request Forgery. \cite{assis2023implementation}
+Cross-Origin Resource Sharing\cite{assis2023implementation} (CORS) stanowi mechanizm bezpieczeństwa przeglądarek internetowych, który kontroluje dostęp do zasobów serwera z różnych źródeł. Domyślnie przeglądarki blokują żądania HTTP wykonywane przez kod JavaScript do domen innych niż ta, z której pochodzi strona internetowa. Jest to część polityki Same-Origin Policy, mającej na celu ochronę przed atakami typu Cross-Site Request Forgery. 
 
-W kontekście niniejszej aplikacji frontend jest hostowany na platformie Firebase Hosting pod domeną \texttt{simplefund.me}, podczas gdy backend działa na Heroku pod inną domeną. Bez odpowiedniej konfiguracji CORS przeglądarka blokowałaby wszystkie żądania z aplikacji frontendowej do API backendowego.
-
-Problem został rozwiązany poprzez wykorzystanie biblioteki \texttt{Flask-CORS}, która automatycznie dodaje odpowiednie nagłówki HTTP do odpowiedzi serwera. Konfiguracja CORS została zaimplementowana w sposób restrykcyjny, zezwalając jedynie na żądania pochodzące z domen określonych na Listingu \ref{lst:cors-config}.
+W kontekście przedstawianej aplikacji frontend jest hostowany na platformie Firebase Hosting pod domeną \texttt{simplefund.me}, podczas gdy backend działa na Heroku pod inną domeną. Bez odpowiedniej konfiguracji CORS przeglądarka blokowałaby wszystkie żądania z aplikacji frontendowej do API backendowego. Skonfigurowanie pozwalające wybranym domeną na wysyłąnie zapytań do serwisu backendowego przedstawia Listing \ref{lst:cors-config}.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{python}
-from flask_cors import CORS
-
 CORS(app, resources={
     r"/*": {
         "origins": [

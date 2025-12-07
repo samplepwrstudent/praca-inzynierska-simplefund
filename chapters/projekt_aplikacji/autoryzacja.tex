@@ -2,23 +2,12 @@
 
 Zapewnienie bezpiecznego i ergonomicznego mechanizmu logowania oraz rejestracji użytkowników stanowi podstawowy element każdej współczesnej aplikacji internetowej. W tym przypadku mechanizm autoryzacji warunkuje dostęp do zasobów i funkcji aplikacji (historia wykonanych operacji), chroniąc dane użytkowników przed nieautoryzowanym dostępem.
 
-Aplikacja wykorzystuje usługę Firebase Authentication jako zewnętrzny mechanizm autoryzacji użytkowników. W warstwie konfiguracji inicjalizowana jest aplikacja Firebase, a następnie tworzony jest klient modułu uwierzytelniania, co schematycznie przedstawiono na listingu~\ref{lst:firebase-init}.
-
-\begin{lstlisting}[language=TypeScript, caption={Schemat konfiguracji usługi Firebase Authentication}, label={lst:firebase-init}]
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-\end{lstlisting}
-
-Mechanizm autoryzacji w Firebase opiera się na zarządzaniu tożsamością użytkownika po stronie usługi chmurowej. Aplikacja kliencka przekazuje dane logowania (np. adres e-mail i hasło lub token z zewnętrznego dostawcy, takiego jak Google), a następnie otrzymuje zaszyfrowane tokeny sesyjne, które pozwalają w sposób bezpieczny identyfikować użytkownika przy każdym kolejnym żądaniu. Dzięki temu logika weryfikacji poświadczeń oraz przechowywania haseł jest przeniesiona do zaufanego dostawcy, co ogranicza ryzyko błędów implementacyjnych po stronie aplikacji.Aplikacja SimpleFund wykorzystuje usługę Firebase Authentication jako zewnętrzny mechanizm autoryzacji użytkowników. W warstwie konfiguracji inicjalizowana jest aplikacja Firebase, a następnie tworzony jest klient modułu uwierzytelniania.
-
-Interfejs logowania oraz rejestracji został zaimplementowany jako zbiór komponentów stron \texttt{Login.tsx} oraz \texttt{Register.tsx}, które współdzielą podejście oparte na deklaratywnej walidacji danych wejściowych. W obu przypadkach zastosowano bibliotekę React Hook Form w połączeniu z biblioteką Zod, dzięki czemu reguły poprawności danych opisane są w postaci schematów typów, a ich weryfikacja odbywa się po stronie klienta jeszcze przed wywołaniem metod uwierzytelniania Firebase.
-
 \begin{figure}[h]
     \centering
 
     \begin{subfigure}{0.45\linewidth}
         \centering
-        \includegraphics[height=7cm]{jasny_ekran_logowania.png}
+        \includegraphics[height=7cm]{images/jasny_ekran_logowania.png}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.45\linewidth}
@@ -30,36 +19,48 @@ Interfejs logowania oraz rejestracji został zaimplementowany jako zbiór kompon
     \label{fig:dwa_obrazki}
 \end{figure}
 
-Schemat walidacji danych logowania wymaga poprawnego adresu poczty elektronicznej oraz hasła o minimalnej długości sześciu znaków, co przedstawiono na listingu~\ref{lst:login-schema}.
 
-\begin{lstlisting}[language=TypeScript, caption={Schemat walidacji danych logowania}, label={lst:login-schema}]
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+Fundamentem systemu autoryzacji jest moduł Firebase Authentication, \cite{programistajava2025firebaseauth} zintegrowany z aplikacją za pomocą biblioteki klienckiej Firebase SDK. Proces konfiguracji polega na pobraniu kluczy konfiguracyjnych z projektu Firebase oraz przekazaniu ich do aplikacji, aby Firebase mógł poprawnie zweryfikować źródło żądania i umożliwić autoryzowany dostęp. Na Listingu \ref{lst:firebase-init} przedstawiono inicjalizację usług Firebase. Szczególną uwagę w kontekście autoryzacji należy zwrócić na obiekt \texttt{auth}, odpowiedzialny za wykonywanie operacji uwierzytelniania.
 
-type LoginFormData = z.infer<typeof loginSchema>;
-\end{lstlisting}
+Dodatkowo, aplikacja umożliwia logowanie za pośrednictwem konta Google, wykorzystując mechanizm uwierzytelniania federacyjnego. \cite{wolniewicz2012federacyjne} Jest to metoda, w której proces identyfikacji użytkownika powierzany jest zewnętrznemu, zaufanemu dostawcy tożsamości (Google), dzięki czemu aplikacja nie musi samodzielnie przechowywać ani weryfikować danych logowania. Rozwiązanie to zwiększa bezpieczeństwo oraz ułatwia użytkownikom dostęp do systemu poprzez wykorzystanie istniejących kont.
 
-Analogicznie, w przypadku rejestracji zdefiniowano rozszerzony schemat, który, poza adresem e-mail i hasłem, obejmuje również pole służące do potwierdzenia hasła. Schemat wymusza zgodność obu wartości, co umożliwia wczesne wychwycenie potencjalnych błędów po stronie użytkownika (listing~\ref{lst:register-schema}).
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
-\begin{lstlisting}[language=TypeScript, caption={Schemat walidacji danych rejestracji}, label={lst:register-schema}]
-const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  path: ['confirmPassword'],
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
-\end{lstlisting}
-
-Dodatkowo aplikacja umożliwia logowanie za pośrednictwem konta Google, wykorzystując mechanizm uwierzytelniania federacyjnego.Jest to metoda, w której proces identyfikacji użytkownika powierzany jest zewnętrznemu, zaufanemu dostawcy tożsamości (Google), dzięki czemu aplikacja nie musi samodzielnie przechowywać ani weryfikować danych logowania\cite{wolniewicz2012federacyjne}. Rozwiązanie to zwiększa bezpieczeństwo oraz ułatwia użytkownikom dostęp do systemu poprzez wykorzystanie istniejących kont. Wybrany fragment kodu odpowiedzialny za obsługę tego scenariusza przedstawiono na listingu~\ref{lst:google-login}.
-
-\begin{lstlisting}[language=TypeScript, caption={Logowanie użytkownika przy użyciu konta Google}, label={lst:google-login}]
-const handleGoogleSignIn = async () => {
-  const result = await signInWithPopup(auth, googleProvider);
-  await createUserDocument(result.user);
+const firebaseConfig = {
+    // Klucze firebase unikalne dla każdego projektu
 };
-\end{lstlisting}
+
+const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const googleProvider = new GoogleAuthProvider();
+\end{minted}
+\caption{Inicjalizacja usług Firebase}
+\label{lst:firebase-init}
+\end{listing}
+
+
+Zalecaną praktyką jest weryfikowanie i odrzucanie nieprawidłowych bądź niekompletnych danych już na etapie ich wprowadzania przez użytkownika. W tym celu stworzono mechanizm walidacji oparty na bibliotece Zod,\cite{zod2025docs} definiującej schematy typowanych struktur danych, oraz React Hook Form, \cite{frontcave2025rhf} zarządzającym stanem formularzy i procesem ich obsługi. Zastosowanie tego podejścia pozwala na deklaratywną specyfikację reguł walidacji oraz automatyczne wyświetlanie komunikatów o błędach bezpośrednio w interfejsie użytkownika.
+
+
+Schemat walidacji danych logowania wymaga poprawnego adresu poczty elektronicznej oraz hasła o minimalnej długości sześciu znaków, co przedstawiono na Listingu \ref{lst:login-validation}.
+
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
+const loginSchema = z.object({
+  email: z.string()
+    .min(1, 'Email jest wymagany')
+    .email('Nieprawidłowy format email'),
+  password: z.string()
+    .min(6, 'Hasło musi mieć co najmniej 6 znaków'),
+});
+\end{minted}
+\caption{Schemat walidacji dla formularza logowania}
+\label{lst:login-validation}
+\end{listing}
+

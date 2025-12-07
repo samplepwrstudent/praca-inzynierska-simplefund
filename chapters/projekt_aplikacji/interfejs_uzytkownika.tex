@@ -1,6 +1,6 @@
 \section{Interfejs użytkownika}
 
-Aplikacja została zaprojektowana z wykorzystaniem biblioteki Material UI w wersji 7, która implementuje założenia Material Design 3. Interfejs charakteryzuje się nowoczesnym, minimalistycznym wyglądem oraz spójnym systemem projektowania, który obejmuje zarówno aspekty estetyczne, jak i funkcjonalne.
+Aplikacja została zaprojektowana z wykorzystaniem biblioteki Material UI w wersji 7, która jest zgodna z założeniami Material Design 3 \cite{material32025expressive}. Interfejs charakteryzuje się nowoczesnym, minimalistycznym wyglądem oraz spójnym systemem projektowania, który obejmuje zarówno aspekty estetyczne, jak i funkcjonalne.
 
 \begin{figure}[h]
     \centering
@@ -9,9 +9,10 @@ Aplikacja została zaprojektowana z wykorzystaniem biblioteki Material UI w wers
     \label{fig:placeholder}
 \end{figure}
 
-System typografii w aplikacji opiera się na sześciu rozmiarach czcionek. Rozmiary te zostały zdefiniowane w jednostkach \texttt{rem}, co zapewnia skalowalność interfejsu i lepszą dostępność. Najmniejszy rozmiar wykorzystywany jest do wyświetlania dodatkowych informacji i etykiet, podczas gdy największy jest zarezerwowany dla nagłówków głównych sekcji.
+System typografii w aplikacji opiera się na sześciu rozmiarach czcionek. Rozmiary te zostały zdefiniowane w jednostkach \texttt{rem} \cite{sandu2023remcss} (Listing \ref{lst:font-sizes}), co zapewnia skalowalność interfejsu i lepszą dostępność. Najmniejszy rozmiar wykorzystywany jest do wyświetlania dodatkowych informacji i etykiet, podczas gdy największy jest zarezerwowany dla głównych nagłówków sekcji. Styl czcionki jest domyślny dla interfejsu MUI - Roboto.
 
-\begin{lstlisting}[language=JavaScript, caption={Definicja rozmiarów czcionek}]
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
 export const fontSizes = {
     tiny: '0.75rem',     // 12px
     small: '0.875rem',   // 14px
@@ -20,13 +21,15 @@ export const fontSizes = {
     large: '1.25rem',    // 20px
     xlarge: '1.5rem',    // 24px
 };
-\end{lstlisting}
+\end{minted}
+\caption{Definicja rozmiarów czcionek}
+\label{lst:font-sizes}
+\end{listing}
 
-Jednolity system odstępów stanowi podstawę spójności wizualnej interfejsu. Zdefiniowano osiem poziomów odstępów, od \texttt{xxs} (4px) do \texttt{jumbo} (64px), które są konsekwentnie stosowane do marginesów, paddingów oraz luk między elementami. Najmniejsze odstępy wykorzystywane są do precyzyjnego rozmieszczenia elementów wewnątrz komponentów, podczas gdy największe oddzielają główne sekcje interfejsu, tworząc wyraźne strefy funkcjonalne.
+Jednolity system odstępów stanowi podstawę spójności wizualnej interfejsu. Zdefiniowano osiem poziomów odstępów (Listing \ref{lst:spacing}), od \texttt{xxs} (4 px) do \texttt{jumbo} (64 px), które są konsekwentnie stosowane do marginesów, paddingów oraz przerw między elementami. Najmniejsze odstępy wykorzystywane są do precyzyjnego rozmieszczenia elementów wewnątrz komponentów, podczas gdy największe oddzielają główne sekcje interfejsu, tworząc wyraźne strefy funkcjonalne.
 
-
-\newpage
-\begin{lstlisting}[language=JavaScript, caption={System odstępów}]
+\begin{listing}[h]
+\begin{minted}[fontsize=\small, linenos]{typescript}
 export const spacing = {
     xxs: '0.25rem',     // 4px
     xs: '0.5rem',       // 8px
@@ -37,70 +40,38 @@ export const spacing = {
     xxl: '3rem',        // 48px
     jumbo: '4rem',      // 64px
 };
-\end{lstlisting}
+\end{minted}
+\caption{Zadeklarowane wartości odstępów}
+\label{lst:spacing}
+\end{listing}
 
-Aby zwiększyć komfort korzystania z aplikacji, wprowadzono motyw jasny oraz ciemny. Użytkownik ma możliwość swobodnego przełączania między trybami za pomocą dedykowanego przycisku w menu nawigacyjnym. Domyślnie aplikacja uruchamia się w trybie ciemnym, a wybór użytkownika jest zapamiętywany w pamięci lokalnej przeglądarki i przywracany w kolejnych sesjach.
-
-\begin{figure}[h]
+Aby zwiększyć komfort korzystania z aplikacji, wprowadzono motywy jasny i ciemny. Użytkownik ma możliwość swobodnego przełączania między trybami za pomocą dedykowanego przycisku w menu nawigacyjnym. Domyślnie aplikacja uruchamia się w trybie ciemnym, a wybór użytkownika jest zapamiętywany w pamięci lokalnej przeglądarki i przywracany w kolejnych sesjach. Porównanie przykładowego komponentu w różnych motywach znajduje się na Rysunku \ref{fig:porownanie_motywow}.
+\begin{figure}[H]
     \centering
 
     \begin{subfigure}{0.45\linewidth}
         \centering
-        \includegraphics[height=7cm]{jasny_ekran_logowania.png}
+        \includegraphics[height=7cm]{images/jasny_ekran_logowania.png}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.45\linewidth}
         \centering
-        \includegraphics[height=7cm]{image.png}
+        \includegraphics[height=7cm]{images/ciemny_ekran_logowania.png}
     \end{subfigure}
 
-    \caption{Porównanie erkanów logowania dla różnych motywów}
-    \label{fig:dwa_obrazki}
+    \caption{Porównanie ekranów logowania dla różnych motywów}
+    \label{fig:porownanie_motywow}
 \end{figure}
+
+ Motyw jasny wykorzystuje neutralne, wysokiej jasności tło, które umożliwia klarowne rozdzielenie warstw interfejsu oraz zapewnia wysoki kontrast tekstu podstawowego i drugorzędnego. Motyw ciemny oparty na niskich wartościach jasności sprzyja komfortowi pracy przy słabym oświetleniu, jednocześnie zachowując wyraźną hierarchię informacji dzięki odpowiednio dobranym poziomom kontrastu. W obu wariantach zastosowano spójną paletę barw akcentowych w odcieniach bursztynowo-złotym i intensywnie pomarańczowym, które podkreślają elementy interakcyjne oraz wzmacniają wizualną identyfikację systemu. 
 
 Do definiowania kolorów  w interfejsie aplikacji został wykorzystany model barw HSL. Jest to przestrzeń barw, w której kolor opisywany jest za pomocą trzech parametrów: odcienia (Hue, 0–360°), nasycenia (Saturation, 0–100\%) oraz jasności (Lightness, 0–100\%).\cite{zabka2020podstawowe}
 
-Zastosowanie tego modelu umożliwia bardziej intuicyjne operowanie kolorami, a także ułatwia implementację wariantów jasnych i ciemnych poprzez odpowiednią regulację komponentu jasności, co sprzyja zachowaniu spójności wizualnej systemu.
+Zastosowanie tego modelu umożliwia bardziej intuicyjne operowanie kolorami, a także ułatwia stworzenie wariantów jasnych i ciemnych poprzez odpowiednią regulację komponentu jasności, co sprzyja zachowaniu spójności wizualnej systemu.
 
-\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\linewidth]{images/hsl.png}
     \caption{Przestrzeń barw HSL}
     \label{fig:placeholder}
 \end{figure}
-
-W projekcie zastosowano dwa komplementarne warianty kolorystyczne oparte na modelu HSL, zapewniające spójność wizualną oraz optymalną czytelność w zróżnicowanych warunkach oświetleniowych. Motyw jasny wykorzystuje neutralne, wysokiej jasności tło, które umożliwia klarowne rozdzielenie warstw interfejsu oraz zapewnia wysoki kontrast tekstu podstawowego i drugorzędnego. Motyw ciemny oparty na niskich wartościach jasności sprzyja komfortowi pracy przy słabym oświetleniu, jednocześnie zachowując wyraźną hierarchię informacji dzięki odpowiednio dobranym poziomom kontrastu. W obu wariantach zastosowano spójną paletę barw akcentowych w odcieniach bursztynowo-złotym i intensywnie pomarańczowym, które podkreślają elementy interakcyjne oraz wzmacniają wizualną identyfikację systemu. 
-
-
-\begin{lstlisting}[language=JavaScript, caption={Paleta kolorów obu motywów}]
-// Kolory akcentujace
-primary: {
-    main: 'hsl(40, 95%, 48%)',
-},
-secondary: {
-    main: 'hsl(14, 100%, 46%)',
-},
-
-// Motyw jasny
-background: {
-    default: 'hsl(0, 0%, 90%)',
-    paper: 'hsl(0, 0%, 95%)',
-},
-text: {
-    primary: 'hsl(0, 0%, 5%)',
-    secondary: 'hsl(0, 0%, 30%)',
-},
-
-// Motyw ciemny
-background: {
-    default: 'hsl(0, 0%, 7%)',
-    paper: 'hsl(0, 0%, 12%)',
-},
-text: {
-    primary: 'hsl(0, 0%, 95%)',
-    secondary: 'hsl(0, 0%, 70%)',
-},
-\end{lstlisting}
-
-

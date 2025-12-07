@@ -1,10 +1,11 @@
 \Chapter{Testowanie aplikacji}
 
-Testy aplikacji przeprowadzano w dwóch osiach, pierwszą stanowiły testy funkcjonalne przeprowadzone przy użyciu frameworka Cypress, weryfikujące poprawność działania funkcjonalności systemu. Drugą zaś, stanowiła analiza wydajnościowa i doświadczeń użytwkonika (UX) za pomocą Google Lighthouse, narzędzia badającego nie tylko aspekty techniczne, ale również Web Vitals - metryki istotne z perspektywy doświadczenia użytkownika końcowego. Takie połączenie testów automatycznych z audytem jakości pozwoliło na kompleksową ocenę zarówno poprawności funkcjonowania aplikacji, jak i jej komfortu użytkowania.
+Testy aplikacji zostały przeprowadzone w dwóch komplementarnych wymiarach. Pierwszy obejmował testy funkcjonalne, zrealizowane z wykorzystaniem frameworka Cypress, których celem była weryfikacja poprawności działania poszczególnych funkcjonalności systemu w typowych scenariuszach użytkowych.
 
+Drugim wymiarem była analiza jakościowa i wydajnościowa, wykonana za pomocą narzędzia Google Lighthouse. Lighthouse umożliwia automatyczną ocenę kluczowych parametrów aplikacji webowej, obejmując m.in. efektywność renderowania, stabilność wizualną, szybkość interakcji, dostępność oraz zgodność z dobrymi praktykami projektowania interfejsów. Narzędzie dokonuje pomiarów zarówno aspektów technicznych, jak i czynników wpływających na percepcję i komfort użytkownika, w tym metryk powiązanych z Web Vitals.
 \section{Testy end-to-end w Cypress}
 
-Cypress jest nowoczesnym frameworkiem do automatyzacji testów aplikacji webowych, charakteryzującym się bezpośrednim wykonywaniem testów w przeglądarce, co zapewnia wysoką wierność odwzorowania rzeczywistych interakcji użytkownika.
+Cypress jest nowoczesnym frameworkiem do automatyzacji testów aplikacji webowych, charakteryzującym się bezpośrednim wykonywaniem testów w przeglądarce, co zapewnia wysoką wierność odwzorowania rzeczywistych interakcji użytkownika. \cite{browserstack2025cypressreact}
 
 \begin{figure}[h]
     \centering
@@ -13,52 +14,12 @@ Cypress jest nowoczesnym frameworkiem do automatyzacji testów aplikacji webowyc
     \label{fig:placeholder}
 \end{figure}
 
-Konfiguracja Cypress w projekcie została zdefiniowana jak na Listingu \ref{lst:cypress-config}, określa parametry środowiska testowego, w tym adres bazowy aplikacji oraz wzorce plików testowych.
+Istotnym elementem architektury testów jest mechanizm zapewniający izolację poszczególnych przypadków testowych. 
 
-\begin{listing}[h]
-\begin{minted}[fontsize=\small, linenos]{typescript}
-import { defineConfig } from 'cypress';
+W tym celu każdy test poprzedzony jest procedurą logowania użytkownika testowego, a po jego zakończeniu następuje procedura wylogowania. Takie podejście gwarantuje, że każdy test rozpoczyna się w znanym stanie aplikacji, eliminując potencjalne zależności między testami oraz zapewniając ich powtarzalność. 
 
-export default defineConfig({
-  e2e: {
-    baseUrl: 'http://localhost:5173',
-    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
-    supportFile: 'cypress/support/e2e.ts',
-  },
-});
-\end{minted}
-\caption{Konfiguracja Cypress}
-\label{lst:cypress-config}
-\end{listing}
 
-Istotnym elementem architektury testów jest mechanizm zapewniający izolację poszczególnych przypadków testowych. W tym celu każdy test poprzedzony jest procedurą logowania użytkownika testowego, a po jego zakończeniu następuje procedura wylogowania. Takie podejście gwarantuje, że każdy test rozpoczyna się w znanym stanie aplikacji, eliminując potencjalne zależności między testami oraz zapewniając ich powtarzalność. 
-
-\begin{listing}[h]
-\begin{minted}[fontsize=\small, linenos]{javascript}
-describe("E2E Tests", () => {
-    beforeEach(() => {
-        cy.visit('/login');
-        cy.get('input[name="email"]').type('demo@gmail.com');
-        cy.get('input[name="password"]').type('demo123');
-        cy.get('button[type="submit"]').click();
-        cy.url().should('eq', `${Cypress.config().baseUrl}/`);
-    });
-
-    afterEach(() => {
-        const avatarClass = "MuiAvatar-root MuiAvatar-circular " +
-            "MuiAvatar-colorDefault css-1q1kj4q-MuiAvatar-root"
-        cy.get('[class="' + avatarClass + '"]').click();
-        cy.contains("Wyloguj").click();
-    })
-});
-\end{minted}
-\caption{Mechanizm logowania i wylogowania użytkownika w testach}
-\label{lst:cypress-hooks}
-\end{listing}
-
-Testy weryfikują poprawne renderowanie najważniejszych sekcji aplikacji: tabel operacji, dostępność modali służących do dodawania nowych operacji, prezentację statystyk portfela oraz renderowanie wykresów.
-
-\begin{listing}[h]
+\begin{listing}[h!]
 \begin{minted}[fontsize=\small, linenos]{javascript}
 it("add stock modal should show", () => {
     cy.get('[aria-label="dodaj operację"]').click();
@@ -71,46 +32,64 @@ it("add stock modal should show", () => {
 \label{lst:cypress-modal-test}
 \end{listing}
 
+Testy weryfikują poprawne renderowanie najważniejszych sekcji aplikacji: tabel operacji, dostępność modali służących do dodawania nowych operacji, prezentację statystyk portfela oraz renderowanie wykresów.
+
+
+
 W teście przedstawionym w Listingu~\ref{lst:cypress-modal-test} symulowane jest kliknięcie przycisku dodawania operacji, następnie wybór typu aktywa (akcje), a na końcu weryfikacja obecności odpowiednich elementów interfejsu oraz zamknięcie modala. Tego rodzaju testy pozwalają na automatyczną weryfikację, że komponenty dialogowe poprawnie się otwierają, wyświetlają odpowiednie treści i mogą być zamykane przez użytkownika.
 
-% Komentarz: Tutaj powinien znaleźć się screenshot ze wszystkimi przechodzącymi testami (zielone ptaszki/checkmarki)
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width=0.8\textwidth]{cypress-tests-passed.png}
-% \caption{Wyniki testów Cypress --- wszystkie testy zakończone sukcesem}
-% \label{fig:cypress-tests-passed}
-% \end{figure}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/cypress_w_trakcie_testow.png}
+    \caption{Widok Cypress w trakcie przeprowadzania testów}
+    \label{fig:placeholder}
+\end{figure}
 
 \section{Audyt wydajności z Google Lighthouse}
 
-Google Lighthouse to zautomatyzowane narzędzie open-source służące do audytu jakości stron internetowych. Przeprowadza ono kompleksową analizę aplikacji webowych w pięciu kategoriach: wydajności (Performance), dostępności (Accessibility), najlepszych praktyk (Best Practices), optymalizacji pod kątem wyszukiwarek (SEO) oraz zgodności z wymaganiami Progressive Web App. Lighthouse generuje szczegółowe raporty zawierające zarówno numeryczne oceny, jak i konkretne rekomendacje dotyczące poprawy jakości aplikacji. Audyt został przeprowadzony na urządzeniu typu desktop (rozdzielczość 1280x720 pikseli), jego wyniki zaprezentowane sa w tabeli \ref{tab:lighthouse-results}.
+Google Lighthouse to zautomatyzowane narzędzie open-source służące do audytu jakości stron internetowych \cite{chrome2025lighthouse}. Przeprowadza ono kompleksową analizę aplikacji webowych w czterech kategoriach: wydajności (Performance), dostępności (Accessibility), najlepszych praktyk (Best Practices) oraz optymalizacji pod kątem wyszukiwarek (SEO - Search Engine Optima).
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/lighthouse_overview.png}
+    \caption{Wyniki audytu Google Lighthouse}
+    \label{fig:placeholder}
+\end{figure}
+
+
+Lighthouse generuje szczegółowe raporty zawierające zarówno numeryczne oceny, jak i konkretne rekomendacje dotyczące poprawy jakości aplikacji. Audyt został przeprowadzony na urządzeniu typu desktop (rozdzielczość 1280x720 pikseli), jego wyniki zaprezentowane są w tabeli \ref{tab:lighthouse-results}.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{|l|c|}
+\begin{tabular}{|l|c|c|}
 \hline
-\textbf{Kategoria} & \textbf{Wynik} \\ \hline
-Wydajność (Performance)        & 72/100  \\ \hline
-Dostępność (Accessibility)     & 91/100  \\ \hline
-Najlepsze praktyki (Best Practices) & 100/100 \\ \hline
-Optymalizacja SEO              & 92/100  \\ \hline
+\textbf{Kategoria} & \textbf{Wynik} & \textbf{Ocena} \\ \hline
+Wydajność (Performance)        & 72/100  & Wymagający poprawy \\ \hline
+Dostępność (Accessibility)     & 91/100  & Dobry \\ \hline
+Najlepsze praktyki (Best Practices) & 100/100 & Dobry \\ \hline
+Optymalizacja SEO              & 92/100  & Dobry \\ \hline
 \end{tabular}
 \caption{Wyniki audytu Google Lighthouse}
 \label{tab:lighthouse-results}
 \end{table}
 
-Wynik w kategorii wydajności, choć mieszczący się w przedziale zadowalającym, wskazuje na obszary wymagające optymalizacji, szczególnie w zakresie czasu ładowania kluczowych elementów strony oraz stabilności wizualnej interfejsu. Jednocześnie pozostałe kategorie: dostępność, najlepsze praktyki oraz SEO, uzyskały bardzo wysokie wyniki, co wskazuje na poprawną implementację standardów, zgodność z wytycznymi Google oraz ogólną poprawność techniczną aplikacji w tych obszarach.
+
+Wynik w kategorii wydajności, choć mieszczący się w przedziale zadowalającym, wskazuje na obszary wymagające optymalizacji, szczególnie w zakresie czasu ładowania kluczowych elementów strony oraz stabilności wizualnej interfejsu. Jednocześnie pozostałe kategorie: dostępność, najlepsze praktyki oraz SEO uzyskały bardzo wysokie wyniki co wskazuje na zgodność z wytycznymi Google oraz ogólną poprawność techniczną aplikacji w tych obszarach.
+
+
+\subsection*{Core Web Vitals}
+
+Core Web Vitals to zestaw kluczowych metryk opracowanych przez Google, które umożliwiają ocenę jakości doświadczenia użytkownika w kontekście wydajności stron internetowych i aplikacji webowych  \cite{webdev2020vitals}. Metryki te koncentrują się na trzech fundamentalnych aspektach interakcji użytkownika ze stroną: czasie ładowania istotnej zawartości, stabilności wizualnej układu oraz responsywności interfejsu.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/lighthouse_overview.png}
-    \caption{Wyniki audytu Google Lighthouse}
+    \includegraphics[width=1\linewidth]{images/web_core_vitals.png}
+    \caption{Core Web Vitals}
     \label{fig:placeholder}
 \end{figure}
 
-\section{Core Web Vitals}
-
-Core Web Vitals to zestaw kluczowych metryk opracowanych przez Google, które umożliwiają ocenę jakości doświadczenia użytkownika w kontekście wydajności stron internetowych i aplikacji webowych. Metryki te koncentrują się na trzech fundamentalnych aspektach interakcji użytkownika ze stroną: czasie ładowania istotnej zawartości, stabilności wizualnej układu oraz responsywności interfejsu. 
 
 Largest Contentful Paint (LCP) mierzy czas potrzebny na wyrenderowanie największego elementu treści widocznego dla użytkownika, co bezpośrednio wpływa na postrzeganą szybkość działania strony. 
 
@@ -118,12 +97,7 @@ Cumulative Layout Shift (CLS) określa poziom nieoczekiwanych przesunięć eleme
 
 Interaction to Next Paint (INP), metryka rozwinięta w kontekście najnowszych standardów Core Web Vitals, ocenia pełną responsywność interfejsu poprzez mierzenie opóźnienia między interakcją użytkownika a momentem, w którym interfejs reaguje wizualnie, co ma kluczowe znaczenie dla płynności i intuicyjności obsługi strony. \cite{optimizing_core_web_vitals_2025}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\linewidth]{images/web_core_vitals.png}
-    \caption{Web core vitals}
-    \label{fig:placeholder}
-\end{figure}
+
 
 Zestawienie tych wskaźników pozwala nie tylko na szczegółową analizę wydajności strony z perspektywy użytkownika, lecz także stanowi istotny element algorytmów rankingowych wyszukiwarek, co sprawia, że optymalizacja Core Web Vitals ma bezpośrednie przełożenie zarówno na komfort użytkowania, jak i na widoczność serwisu w wynikach wyszukiwania.
  
@@ -134,9 +108,9 @@ Wyniki wskaźników LCP oraz CLS zostały bezpośrednio pobrane z raportu Lighth
 \begin{tabular}{|l|c|c|}
 \hline
 \textbf{Metryka} & \textbf{Wynik} & \textbf{Ocena} \\ \hline
-Largest Contentful Paint (LCP) & 1488 ms & Do poprawy \\ \hline
-Cumulative Layout Shift (CLS)   & 0.339 & Słaba \\ \hline
-Interaction to Next Paint (INP) & 128 ms & Dobra \\ \hline
+Largest Contentful Paint (LCP) & 1488 ms & Wymagający poprawy \\ \hline
+Cumulative Layout Shift (CLS)   & 0.339 & Słaby \\ \hline
+Interaction to Next Paint (INP) & 128 ms & Dobry \\ \hline
 \end{tabular}
 \caption{Wyniki Core Web Vitals aplikacji}
 \label{tab:webvitals}

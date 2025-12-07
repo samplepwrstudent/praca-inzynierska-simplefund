@@ -1,0 +1,7 @@
+\section{Baza danych Cloud Firestore}
+
+Cloud Firestore \cite{krzakfirestore} to dokumentowa baza działająca w modelu serverless \cite{cyberfolks2025serverless} w ramach platformy Firebase, co umożliwia wdrożenie aplikacji bez konieczności utrzymywania własnej infrastruktury. Firestore zapewnia automatyczne skalowanie, synchronizację danych w czasie rzeczywistym oraz obsługę trybu offline, co czyni go rozwiązaniem szczególnie korzystnym dla aplikacji webowych pracujących na dynamicznych danych.
+
+Wybór Firestore wynikał z potrzeby szybkiego rozwoju projektu oraz integracji z usługami Firebase, takimi jak Authentication. Elastyczny, nieschematyczny model danych pozwala przechowywać różne typy aktywów finansowych bez skomplikowanych migracji i relacji wymaganych w tradycyjnych bazach SQL \cite{bakajason202Xpostgre_firestore}. Dzięki temu możliwe jest iteracyjne rozwijanie aplikacji bez wysokich kosztów utrzymania.
+
+Architektura bazodanowa obejmuje pięć kluczowych kolekcji: \texttt{users} (informacje o użytkownikach), \texttt{operations} (transakcje finansowe), \texttt{stock\_info} (lista symboli akcji), \texttt{custom\_stock} (specyficzne aktywa dla danego użytkownika) oraz \texttt{stock\_prices} (informacje o akcjach).

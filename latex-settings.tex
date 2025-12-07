@@ -93,6 +93,7 @@
 \renewcommand{\lstlistingname}{Kod źródłowy} % Polska nazwa listingu
 \usepackage{xcolor}
 
+
 \lstset{
     basicstyle=\ttfamily\small,
     keywordstyle=\color{blue},
@@ -125,6 +126,10 @@
   keywords={const, class, export, boolean, throw, implements, import, this, interface, 
   extends, public, private, protected, readonly, enum, type, namespace},
 }
+
+% Konfiguracja minted dla spisu listingów z kropkami
+
+
 % ***************************************************************************************************
 % Marginesy 
 % ***************************************************************************************************
@@ -155,18 +160,18 @@
 \fancypagestyle{custom}{
 	\fancyhf{}									% wyczyść stopki i nagłówki
 	\fancyhead[RO]{								% Prawy, nieparzysty nagłówek
-		\hrulefill \hspace{16pt} \large Chapter \thechapter
+		\hrulefill \hspace{16pt} \large Rozdział \thechapter
 		\put(-471.5,5.5){%
 			\makebox(0,0)[l]{%
-				\small Wrocław University of Science and Technology
+				\small Politechnika Wrocławska
 			}
 		}
 	}
 	\fancyhead[LE]{								% Lewy, parzysty nagłówek
-		\large Chapter \thechapter \hspace{16pt} \hrulefill 
+		\large Rozdział \thechapter \hspace{16pt} \hrulefill 
 		\put(-267,5.5){%
 			\makebox(0,0)[l]{%
-				\small Faculty of Information and Communication Technology
+				\small Wydział Informatyki i Telekomunikacji
 			}
 		}
 	}
@@ -228,6 +233,33 @@
 	\renewcommand{\headrulewidth}{0pt}			% Grubość linii w nagłówku
 	\renewcommand{\footrulewidth}{0.2pt}		% Grubość linii w stopce
 }
+
+% Domyślny styl dla List of Listings
+\fancypagestyle{ListofListingsStyle}{
+	\fancyhf{}									% wyczyść stopki i nagłówki
+	\fancyhead[RO]{								% Prawy, nieparzysty nagłówek
+		\hrulefill \hspace{16pt} \large Spis Listingów
+		\put(-471.5,5.5){%
+			\makebox(0,0)[l]{%
+				\small Wrocław University of Science and Technology
+			}
+		}
+	}
+	\fancyhead[LE]{								% Lewy, parzysty nagłówek
+		\large Spis Listingów \hspace{16pt} \hrulefill 
+		\put(-267,5.5){%
+			\makebox(0,0)[l]{%
+				\small Faculty of Information and Communication Technology
+			}
+		}
+	}
+	\fancyfoot[LE,RO]{							% Stopki
+		\thepage
+	}
+	\renewcommand{\headrulewidth}{0pt}			% Grubość linii w nagłówku
+	\renewcommand{\footrulewidth}{0.2pt}		% Grubość linii w stopce
+}
+
 
 
 % Domyślny styl dla bibliografii

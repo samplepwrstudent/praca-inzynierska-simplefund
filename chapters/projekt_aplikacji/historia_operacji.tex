@@ -1,16 +1,21 @@
 \section{Historia operacji}
 
-Wszystkie zarejestrowane operacje można przeglądać w uporządkowanej formie tabelarycznej. Widok ten został zrealizowany z wykorzystaniem biblioteki Material UI oraz wewnętrznego komponentu bazowego \textit{BaseTable}, który
-narzuca jednolitą stylistykę i zachowanie tabel w całej aplikacji. Widok umożliwia także usuwanie operacji dodanych przypadkowo lub błędnie oraz sortowanie tabeli względem wskazanej kolumny. 
+Wszystkie zarejestrowane operacje można przeglądać w uporządkowanej formie tabelarycznej. Widok ten został zrealizowany z wykorzystaniem biblioteki Material UI oraz wewnętrznego komponentu bazowego \textit{BaseTable}, który narzuca jednolitą stylistykę i zachowanie tabel w całej aplikacji. Jego wygląd przedstawiono na Rysunku \ref{fig:historia_operacji}. Widok umożliwia także usuwanie operacji oraz sortowanie tabeli względem wskazanej kolumny. 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\linewidth]{images/historia_operacji.png}
+    \includegraphics[width=0.8\linewidth]{images/historia_operacji.png}
     \caption{Tabela historii operacji}
-    \label{fig:placeholder}
+    \label{fig:historia_operacji}
 \end{figure}
 
-Tabela historii operacji jest implementowana w komponencie \textit{OperationsTable} i opiera się na mechanizmie kolumn typu \textit{GridColDef}, pochodzącym z komponentu tabeli danych MUI. Każda kolumna opisuje sposób prezentacji wybranego atrybutu operacji (np. daty, typu, kwoty, instrumentu finansowego), a definicje kolumn przekazywane są następnie do komponentu BaseTable. Dzięki temu logika konfigurowania kolumn pozostaje lokalna dla danego widoku, natomiast powtarzalne elementy wyglądu oraz obsługi interakcji są współdzielone.
+Tabela historii operacji opiera się na mechanizmie kolumn typu \textit{GridColDef}, pochodzącym z komponentu tabeli danych MUI. Każda kolumna opisuje sposób prezentacji wybranego atrybutu operacji (np. daty, typu, kwoty, instrumentu finansowego), a definicje kolumn są następnie przekazywane do komponentu \textit{BaseTable}. Dzięki temu logika konfigurowania kolumn pozostaje lokalna dla danego widoku, natomiast powtarzalne elementy wyglądu oraz obsługi interakcji są współdzielone.
+
+
+Na Listingu \ref{lst:columns-quantity} przedstawiono fragment kodu, który definiuje kolumny tabeli historii operacji. Zastosowana w nim logika warunkowa decyduje, czy dana kolumna powinna prezentować wartość w zależności od typu operacji.
+
+
+W przypadku depozytów oraz lokat pola związane z instrumentami giełdowymi, takie jak \texttt{symbol} czy \texttt{wolumen}, zwracają wartość \textit{-}, co pozytywnie wpływa na czytelność i przejrzystość tabeli.
 
 \begin{listing}[h]
 \begin{minted}[fontsize=\small, linenos]{typescript}
@@ -32,6 +37,3 @@ const columns: GridColDef[] = [
 \caption{Konfiguracja kolumny \texttt{Wolumen} w tabeli danych}
 \label{lst:columns-quantity}
 \end{listing}
-
-Na listingu \ref{lst:columns-quantity} przedstawiono fragment kodu, który definiuje kolumny tabeli historii operacji. Zastosowana w nim logika warunkowa decyduje, czy dana kolumna powinna prezentować wartość w zależności od typu operacji. W przypadku depozytów oraz lokat pola związane z instrumentami giełdowymi, takie jak \texttt{symbol} czy \texttt{wolumen}, zwracają wartość \textit{-}, co pozytywnie wpływa na czytelność i przejrzystość tabeli.
-
