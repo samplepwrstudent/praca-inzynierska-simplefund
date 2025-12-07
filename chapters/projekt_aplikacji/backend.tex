@@ -1,12 +1,12 @@
 \section{Serwis Backend}
 
-Warstwa backendowa aplikacji została zrealizowana jako lekki serwis REST API \cite{ovh2020restapi} zbudowany w technologii Flask. Aplikacja została wdrożona na platformie Heroku, która oferuje bezpłatny hosting dla aplikacji webowych dla studentów wraz z automatycznym zarządzaniem infrastrukturą oraz skalowalność. Platforma Heroku automatycznie wykrywa aplikacje Pythonowe na podstawie pliku \texttt{requirements.txt} i konfiguruje środowisko uruchomieniowe zgodnie z zadeklarowanymi zależnościami.
+Warstwa backendowa aplikacji została zrealizowana jako lekki serwis REST API \cite{ovh2020restapi} zbudowany w technologii Flask. Aplikacja została wdrożona na platformie Heroku (Rysunek \ref{fig:heroku}), która oferuje bezpłatny hosting dla aplikacji webowych dla studentów wraz z automatycznym zarządzaniem infrastrukturą oraz skalowalność. Platforma Heroku automatycznie wykrywa aplikacje Pythonowe na podstawie pliku \texttt{requirements.txt} i konfiguruje środowisko uruchomieniowe zgodnie z zadeklarowanymi zależnościami.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\linewidth]{images/widok_panelu_heroku.png}
     \caption{Widok z panelu Heroku}
-    \label{fig:placeholder}
+    \label{fig:heroku}
 \end{figure}
 
 Zawartość pliku \texttt{Procfile} przedstawiona na Listingu \ref{lst:procfile} definiuje typy procesów oraz komendy uruchamiające aplikację. W przypadku omawianego projektu plik ten zawiera jedną linię określającą proces typu \texttt{web}, co wskazuje na aplikację webową obsługującą ruch HTTP.

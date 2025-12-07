@@ -6,14 +6,6 @@ Drugim wymiarem była analiza jakościowa i wydajnościowa, wykonana za pomocą 
 \section{Testy end-to-end w Cypress}
 
 Cypress jest nowoczesnym frameworkiem do automatyzacji testów aplikacji webowych, charakteryzującym się bezpośrednim wykonywaniem testów w przeglądarce, co zapewnia wysoką wierność odwzorowania rzeczywistych interakcji użytkownika. \cite{browserstack2025cypressreact}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\linewidth]{images/panel_testowy_cypress.png}
-    \caption{Panel testowy Cypress}
-    \label{fig:placeholder}
-\end{figure}
-
 Istotnym elementem architektury testów jest mechanizm zapewniający izolację poszczególnych przypadków testowych. 
 
 W tym celu każdy test poprzedzony jest procedurą logowania użytkownika testowego, a po jego zakończeniu następuje procedura wylogowania. Takie podejście gwarantuje, że każdy test rozpoczyna się w znanym stanie aplikacji, eliminując potencjalne zależności między testami oraz zapewniając ich powtarzalność. 
@@ -36,7 +28,9 @@ Testy weryfikują poprawne renderowanie najważniejszych sekcji aplikacji: tabel
 
 
 
-W teście przedstawionym w Listingu~\ref{lst:cypress-modal-test} symulowane jest kliknięcie przycisku dodawania operacji, następnie wybór typu aktywa (akcje), a na końcu weryfikacja obecności odpowiednich elementów interfejsu oraz zamknięcie modala. Tego rodzaju testy pozwalają na automatyczną weryfikację, że komponenty dialogowe poprawnie się otwierają, wyświetlają odpowiednie treści i mogą być zamykane przez użytkownika.
+W teście przedstawionym w Listingu~\ref{lst:cypress-modal-test} symulowane jest kliknięcie przycisku dodawania operacji, następnie wybór typu aktywa (akcje), a na końcu weryfikacja obecności odpowiednich elementów interfejsu oraz zamknięcie modala. Tego rodzaju testy pozwalają na automatyczną weryfikację, że komponenty dialogowe poprawnie się otwierają, wyświetlają odpowiednie treści i mogą być zamykane przez użytkownika. 
+
+Framework Cypress umożliwia dynamiczne monitorowanie przebiegu testów oraz analizę ich wyników w przejrzystym interfejsie graficznym, co zostało zobrazowane na Rysunku \ref{fig:cypress_action}.
 
 
 
@@ -44,7 +38,7 @@ W teście przedstawionym w Listingu~\ref{lst:cypress-modal-test} symulowane jest
     \centering
     \includegraphics[width=0.9\linewidth]{images/cypress_w_trakcie_testow.png}
     \caption{Widok Cypress w trakcie przeprowadzania testów}
-    \label{fig:placeholder}
+    \label{fig:cypress_action}
 \end{figure}
 
 \section{Audyt wydajności z Google Lighthouse}
@@ -55,11 +49,11 @@ Google Lighthouse to zautomatyzowane narzędzie open-source służące do audytu
     \centering
     \includegraphics[width=0.5\linewidth]{images/lighthouse_overview.png}
     \caption{Wyniki audytu Google Lighthouse}
-    \label{fig:placeholder}
+    \label{fig:lighthose_wyniki}
 \end{figure}
 
 
-Lighthouse generuje szczegółowe raporty zawierające zarówno numeryczne oceny, jak i konkretne rekomendacje dotyczące poprawy jakości aplikacji. Audyt został przeprowadzony na urządzeniu typu desktop (rozdzielczość 1280x720 pikseli), jego wyniki zaprezentowane są w tabeli \ref{tab:lighthouse-results}.
+Lighthouse generuje szczegółowe raporty zawierające zarówno numeryczne oceny (Rysunek \ref{fig:lighthose_wyniki}), jak i konkretne rekomendacje dotyczące poprawy jakości aplikacji. Audyt został przeprowadzony dla witryny \texttt{simplefund.me} (nie w środowisku lokalnym) z wcześniej zalogowanym użytkownikiem  na urządzeniu typu desktop o rozdzielczości 1280×720 pikseli. Jego wyniki zaprezentowano w tabeli \ref{tab:lighthouse-results}.
 
 \begin{table}[h!]
 \centering
@@ -81,13 +75,13 @@ Wynik w kategorii wydajności, choć mieszczący się w przedziale zadowalający
 
 \subsection*{Core Web Vitals}
 
-Core Web Vitals to zestaw kluczowych metryk opracowanych przez Google, które umożliwiają ocenę jakości doświadczenia użytkownika w kontekście wydajności stron internetowych i aplikacji webowych  \cite{webdev2020vitals}. Metryki te koncentrują się na trzech fundamentalnych aspektach interakcji użytkownika ze stroną: czasie ładowania istotnej zawartości, stabilności wizualnej układu oraz responsywności interfejsu.
+Core Web Vitals (Rysunek \ref{fig:web_vitals_zakres}) to zestaw kluczowych metryk opracowanych przez Google, które umożliwiają ocenę jakości doświadczenia użytkownika w kontekście wydajności stron internetowych i aplikacji webowych  \cite{webdev2020vitals}. Metryki te koncentrują się na trzech fundamentalnych aspektach interakcji użytkownika ze stroną: czasie ładowania istotnej zawartości, stabilności wizualnej układu oraz responsywności interfejsu.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{images/web_core_vitals.png}
     \caption{Core Web Vitals}
-    \label{fig:placeholder}
+    \label{fig:web_vitals_zakres}
 \end{figure}
 
 
@@ -117,26 +111,5 @@ Interaction to Next Paint (INP) & 128 ms & Dobry \\ \hline
 \end{table}
 
 Najistotniejszym problemem zidentyfikowanym podczas audytu okazała się wartość Cumulative Layout Shift wynosząca 0.34, która znacząco przekracza zalecany próg 0.1. Wysoka wartość CLS oznacza, że w trakcie ładowania strony występują nieprzewidywane przesunięcia elementów interfejsu, co negatywnie wpływa na doświadczenie użytkownika, mogąc prowadzić do przypadkowych kliknięć w niewłaściwe elementy. Analiza przyczyn tego zjawiska wskazała na wykres kołowy portfela jako głównego sprawcę problemu - komponent ten, ładowany asynchronicznie wraz z danymi z Firestore, powoduje przesunięcie pozostałych elementów układu po swoim wyrenderowaniu.
-
-\begin{figure}[h]
-\centering
-\begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[height=1.8cm]{images/lcp.png}
-\end{minipage}
-\hfill
-\begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[height=1.8cm]{images/cls.png}
-\end{minipage}
-\hfill
-\begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[height=1.8cm]{images/inp.png}
-\end{minipage}
-\caption{Zmierzone wyniki wskaźników \emph{Core Web Vitals}: LCP, CLS oraz INP.}
-\label{fig:webvitals}
-\end{figure}
-
 
 Lighthouse zidentyfikował także możliwości optymalizacji obrazu logo aplikacji, sugerując zastosowanie atrybutu \texttt{fetchpriority="high"} oraz zapewnienie jego wykrywalności bezpośrednio w dokumencie HTML, co pozwoliłoby na wcześniejsze rozpoczęcie pobierania tego krytycznego zasobu.

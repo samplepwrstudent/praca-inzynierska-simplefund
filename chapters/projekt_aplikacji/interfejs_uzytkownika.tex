@@ -1,12 +1,12 @@
 \section{Interfejs użytkownika}
 
-Aplikacja została zaprojektowana z wykorzystaniem biblioteki Material UI w wersji 7, która jest zgodna z założeniami Material Design 3 \cite{material32025expressive}. Interfejs charakteryzuje się nowoczesnym, minimalistycznym wyglądem oraz spójnym systemem projektowania, który obejmuje zarówno aspekty estetyczne, jak i funkcjonalne.
+Aplikacja została zaprojektowana z wykorzystaniem biblioteki Material UI w wersji 7, która jest zgodna z założeniami Material Design 3 \cite{material32025expressive}. Interfejs charakteryzuje się nowoczesnym, minimalistycznym wyglądem oraz spójnym systemem projektowania, który obejmuje zarówno aspekty estetyczne, jak i funkcjonalne (Rysunek \ref{fig:fragment_ekranu_glownego}).
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{images/fragment_ekranu_glownego.png}
     \caption{Fragment ekranu głównego}
-    \label{fig:placeholder}
+    \label{fig:fragment_ekranu_glownego}
 \end{figure}
 
 System typografii w aplikacji opiera się na sześciu rozmiarach czcionek. Rozmiary te zostały zdefiniowane w jednostkach \texttt{rem} \cite{sandu2023remcss} (Listing \ref{lst:font-sizes}), co zapewnia skalowalność interfejsu i lepszą dostępność. Najmniejszy rozmiar wykorzystywany jest do wyświetlania dodatkowych informacji i etykiet, podczas gdy największy jest zarezerwowany dla głównych nagłówków sekcji. Styl czcionki jest domyślny dla interfejsu MUI - Roboto.
@@ -65,7 +65,7 @@ Aby zwiększyć komfort korzystania z aplikacji, wprowadzono motywy jasny i ciem
 
  Motyw jasny wykorzystuje neutralne, wysokiej jasności tło, które umożliwia klarowne rozdzielenie warstw interfejsu oraz zapewnia wysoki kontrast tekstu podstawowego i drugorzędnego. Motyw ciemny oparty na niskich wartościach jasności sprzyja komfortowi pracy przy słabym oświetleniu, jednocześnie zachowując wyraźną hierarchię informacji dzięki odpowiednio dobranym poziomom kontrastu. W obu wariantach zastosowano spójną paletę barw akcentowych w odcieniach bursztynowo-złotym i intensywnie pomarańczowym, które podkreślają elementy interakcyjne oraz wzmacniają wizualną identyfikację systemu. 
 
-Do definiowania kolorów  w interfejsie aplikacji został wykorzystany model barw HSL. Jest to przestrzeń barw, w której kolor opisywany jest za pomocą trzech parametrów: odcienia (Hue, 0–360°), nasycenia (Saturation, 0–100\%) oraz jasności (Lightness, 0–100\%).\cite{zabka2020podstawowe}
+Do definiowania kolorów  w interfejsie aplikacji został wykorzystany model barw  (Rysunek \ref{fig:hsl_model}). Jest to przestrzeń barw, w której kolor opisywany jest za pomocą trzech parametrów: odcienia (Hue, 0–360°), nasycenia (Saturation, 0–100\%) oraz jasności (Lightness, 0–100\%).\cite{zabka2020podstawowe}
 
 Zastosowanie tego modelu umożliwia bardziej intuicyjne operowanie kolorami, a także ułatwia stworzenie wariantów jasnych i ciemnych poprzez odpowiednią regulację komponentu jasności, co sprzyja zachowaniu spójności wizualnej systemu.
 
@@ -73,5 +73,5 @@ Zastosowanie tego modelu umożliwia bardziej intuicyjne operowanie kolorami, a t
     \centering
     \includegraphics[width=0.8\linewidth]{images/hsl.png}
     \caption{Przestrzeń barw HSL}
-    \label{fig:placeholder}
+    \label{fig:hsl_model}
 \end{figure}

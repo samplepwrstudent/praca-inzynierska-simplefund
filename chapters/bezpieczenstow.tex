@@ -8,14 +8,6 @@ Reguły bezpieczeństwa Firestore  stanowią mechanizm ochrony danych realizowan
 
 Reguły bezpieczeństwa działają na zasadzie weryfikacji każdego zapytania do bazy danych po stronie serwera, jeszcze przed wykonaniem operacji. Dzięki temu, nawet jeśli potencjalny atakujący uzyska dostęp do konfiguracji klienta aplikacji, nie będzie w stanie obejść zabezpieczeń, ponieważ są one egzekwowane na poziomie infrastruktury chmurowej. Reguły definiowane są w dedykowanym języku deklaratywnym, który umożliwia precyzyjne określenie warunków dostępu w oparciu o kontekst żądania, dane uwierzytelnienia użytkownika oraz zawartość dokumentów.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\linewidth]{images/firebase_rules2.png}
-    \caption{Reguły firestore widziane z poziomu Firebase Console wraz z historią zmian}
-    \label{fig:placeholder}
-\end{figure}
-
-
 W omawianej aplikacji zdefiniowano reguły bezpieczeństwa dla pięciu głównych kolekcji danych. Podstawową zasadą przyjętą w projekcie jest segregacja danych użytkowników poprzez wymuszenie, aby każda operacja była powiązana z identyfikatorem użytkownika wykonującego żądanie. Ilustruje to kod na Listingu \ref{lst:firestore-rules-operations}, który jest konfiguracją reguł dla kolekcji \texttt{operations}.
 
 \begin{listing}[h]
